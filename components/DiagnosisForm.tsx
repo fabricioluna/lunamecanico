@@ -1,302 +1,398 @@
 
-import React from 'react';
-import { FormData } from '../types';
-import { Car, Tool, Activity, HelpCircle, History } from 'lucide-react';
+import React, { useState } from 'react';
+import { DiagnosisFormData } from '../types';
+import { Check, Info, Loader2, Car, Activity, Zap, Thermometer, MessageCircle, Wrench, PlusCircle } from 'lucide-react';
 
 interface DiagnosisFormProps {
-  data: FormData;
-  onChange: (data: FormData) => void;
-  onSubmit: () => void;
-  loading: boolean;
+  onSubmit: (data: DiagnosisFormData) => void;
+  isLoading: boolean;
 }
 
-const DiagnosisForm: React.FC<DiagnosisFormProps> = ({ data, onChange, onSubmit, loading }) => {
-  const updateVeiculo = (field: keyof FormData['veiculo'], value: string) => {
-    onChange({ ...data, veiculo: { ...data.veiculo, [field]: value } });
+interface SectionTitleProps {
+  children: React.ReactNode;
+  icon?: React.ReactNode;
+}
+
+const SectionTitle: React.FC<SectionTitleProps> = ({ children, icon }) => (
+  <h3 className="text-[#F59E0B] font-black text-lg mb-5 flex items-center gap-2 tracking-wide">
+    <div className="bg-[#F59E0B] w-1 h-6 rounded-full"></div>
+    {icon}
+    <span className="uppercase">{children}</span>
+  </h3>
+);
+
+interface CheckboxItemProps {
+  checked: boolean;
+  label: string;
+  onClick: () => void;
+}
+
+const CheckboxItem: React.FC<CheckboxItemProps> = ({ checked, label, onClick }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`flex items-center gap-3 p-4 rounded-2xl border-2 transition-all text-sm font-bold text-left ${
+      checked 
+        ? 'bg-amber-500/10 border-[#F59E0B] text-amber-500' 
+        : 'bg-slate-900 border-slate-800 text-slate-500 hover:border-slate-700'
+    }`}
+  >
+    <div className={`shrink-0 w-6 h-6 rounded-lg flex items-center justify-center border-2 ${
+      checked ? 'bg-[#F59E0B] border-[#F59E0B]' : 'bg-transparent border-slate-700'
+    }`}>
+      {checked && <Check size={16} className="text-slate-900 stroke-[3]" />}
+    </div>
+    {label}
+  </button>
+);
+
+const OthersInput: React.FC<{ value: string; onChange: (val: string) => void; placeholder: string }> = ({ value, onChange, placeholder }) => (
+  <div className="mt-4 relative group">
+    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+      <PlusCircle size={18} className="text-slate-600 group-focus-within:text-[#F59E0B] transition-colors" />
+    </div>
+    <input
+      type="text"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      className="w-full bg-slate-900/50 border-2 border-slate-800 rounded-2xl pl-12 pr-5 py-3 text-sm text-white focus:border-[#F59E0B] outline-none transition-all placeholder:text-slate-700"
+    />
+  </div>
+);
+
+const DiagnosisForm: React.FC<DiagnosisFormProps> = ({ onSubmit, isLoading }) => {
+  const [formData, setFormData] = useState<DiagnosisFormData>({
+    vehicle: {
+      plate: '',
+      model: '',
+      year: '',
+      km: '',
+      engine: '1.0',
+      transmission: 'Manual',
+      fuel: 'Flex'
+    },
+    report: '',
+    symptoms: {
+      noises: [],
+      othersNoises: '',
+      sensations: [],
+      othersSensations: '',
+      dashboard: [],
+      othersDashboard: ''
+    },
+    context: {
+      frequency: 'Não sei informar',
+      condition: 'Não sei informar',
+      othersCondition: '',
+      history: [],
+      othersHistory: ''
+    }
+  });
+
+  const handleVehicleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      vehicle: { ...prev.vehicle, [name]: value }
+    }));
   };
 
-  const toggleSintoma = (category: keyof FormData['sintomas'], value: string) => {
-    const current = data.sintomas[category];
-    const updated = current.includes(value)
-      ? current.filter(i => i !== value)
-      : [...current, value];
-    onChange({ ...data, sintomas: { ...data.sintomas, [category]: updated } });
+  const handleToggleSymptom = (category: keyof DiagnosisFormData['symptoms'], value: string) => {
+    setFormData(prev => {
+      const current = prev.symptoms[category];
+      if (!Array.isArray(current)) return prev;
+      const next = current.includes(value)
+        ? current.filter(i => i !== value)
+        : [...current, value];
+      return {
+        ...prev,
+        symptoms: { ...prev.symptoms, [category]: next }
+      };
+    });
   };
 
-  const toggleCondicao = (value: string) => {
-    const current = data.contexto.condicoes;
-    const updated = current.includes(value)
-      ? current.filter(i => i !== value)
-      : [...current, value];
-    onChange({ ...data, contexto: { ...data.contexto, condicoes: updated } });
+  const handleToggleHistory = (value: string) => {
+    setFormData(prev => {
+      const current = prev.context.history;
+      const next = current.includes(value)
+        ? current.filter(i => i !== value)
+        : [...current, value];
+      return {
+        ...prev,
+        context: { ...prev.context, history: next }
+      };
+    });
   };
 
-  const toggleHistorico = (value: string) => {
-    const current = data.contexto.historico;
-    const updated = current.includes(value)
-      ? current.filter(i => i !== value)
-      : [...current, value];
-    onChange({ ...data, contexto: { ...data.contexto, historico: updated } });
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.vehicle.model) {
+      alert("Seu Luna precisa saber a Marca e o Modelo para ajudar!");
+      return;
+    }
+    onSubmit(formData);
   };
-
-  const inputClass = "w-full bg-slate-800 border-slate-700 rounded-lg py-2 px-3 text-white focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none border transition-all";
-  const labelClass = "block text-slate-400 text-sm font-medium mb-1.5";
-  const sectionClass = "bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-6 shadow-sm";
-  const checkboxClass = "flex items-center gap-2 cursor-pointer group";
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      {/* GRUPO A: DADOS DO VEÍCULO */}
-      <section className={sectionClass}>
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-blue-900/30 text-blue-400 rounded-lg"><Car size={20} /></div>
-          <h2 className="text-xl font-bold text-white uppercase tracking-tight">Grupo A: Dados do Veículo</h2>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className={labelClass}>Marca/Modelo</label>
-            <input 
-              type="text" 
-              className={inputClass}
-              placeholder="Ex: Honda Civic"
-              value={data.veiculo.marcaModelo}
-              onChange={(e) => updateVeiculo('marcaModelo', e.target.value)}
+    <form onSubmit={handleSubmit} className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      
+      {/* B. DADOS DO VEÍCULO */}
+      <div className="bg-slate-800 p-8 rounded-[2.5rem] border border-slate-700/50 shadow-xl">
+        <SectionTitle icon={<Car size={20}/>}>Dados do Veículo</SectionTitle>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="md:col-span-2 space-y-2">
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Marca / Modelo *</label>
+            <input
+              name="model"
+              value={formData.vehicle.model}
+              onChange={handleVehicleChange}
+              placeholder="Ex: Volkswagen Gol"
+              className="w-full bg-slate-900 border-2 border-slate-800 rounded-2xl px-5 py-4 text-white focus:border-[#F59E0B] outline-none transition-all placeholder:text-slate-700 font-medium"
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Placa (Opcional)</label>
+            <input
+              name="plate"
+              value={formData.vehicle.plate}
+              onChange={handleVehicleChange}
+              placeholder="BRA-2E19"
+              className="w-full bg-slate-900 border-2 border-slate-800 rounded-2xl px-5 py-4 text-white focus:border-[#F59E0B] outline-none transition-all placeholder:text-slate-700 font-mono"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className={labelClass}>Ano</label>
-              <input 
-                type="number" 
-                className={inputClass}
-                placeholder="Ex: 2018"
-                value={data.veiculo.ano}
-                onChange={(e) => updateVeiculo('ano', e.target.value)}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Ano</label>
+              <input
+                type="number"
+                name="year"
+                value={formData.vehicle.year}
+                onChange={handleVehicleChange}
+                placeholder="2020"
+                className="w-full bg-slate-900 border-2 border-slate-800 rounded-2xl px-5 py-4 text-white focus:border-[#F59E0B] outline-none transition-all"
               />
             </div>
-            <div>
-              <label className={labelClass}>KM Atual</label>
-              <input 
-                type="number" 
-                className={inputClass}
-                placeholder="Ex: 85000"
-                value={data.veiculo.km}
-                onChange={(e) => updateVeiculo('km', e.target.value)}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">KM</label>
+              <input
+                type="number"
+                name="km"
+                value={formData.vehicle.km}
+                onChange={handleVehicleChange}
+                placeholder="50000"
+                className="w-full bg-slate-900 border-2 border-slate-800 rounded-2xl px-5 py-4 text-white focus:border-[#F59E0B] outline-none transition-all"
               />
             </div>
           </div>
-          <div>
-            <label className={labelClass}>Motorização</label>
-            <select 
-              className={inputClass}
-              value={data.veiculo.motorizacao}
-              onChange={(e) => updateVeiculo('motorizacao', e.target.value)}
+          
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Motorização</label>
+            <select
+              name="engine"
+              value={formData.vehicle.engine}
+              onChange={handleVehicleChange}
+              className="w-full bg-slate-900 border-2 border-slate-800 rounded-2xl px-5 py-4 text-white focus:border-[#F59E0B] outline-none appearance-none transition-all font-medium"
             >
-              <option value="">Selecione...</option>
-              {['1.0', '1.3', '1.4', '1.5', '1.6', '1.8', '2.0', 'Turbo', 'Diesel'].map(v => (
-                <option key={v} value={v}>{v}</option>
-              ))}
+              <option value="1.0">1.0</option>
+              <option value="1.3">1.3</option>
+              <option value="1.4">1.4</option>
+              <option value="1.5">1.5</option>
+              <option value="1.6">1.6</option>
+              <option value="1.8">1.8</option>
+              <option value="2.0">2.0</option>
+              <option value="Acima de 2.0">Acima de 2.0</option>
             </select>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className={labelClass}>Câmbio</label>
-              <select 
-                className={inputClass}
-                value={data.veiculo.cambio}
-                onChange={(e) => updateVeiculo('cambio', e.target.value)}
-              >
-                <option value="">Selecione...</option>
-                {['Manual', 'Automático/CVT', 'Automatizado'].map(v => (
-                  <option key={v} value={v}>{v}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className={labelClass}>Combustível</label>
-              <select 
-                className={inputClass}
-                value={data.veiculo.combustivel}
-                onChange={(e) => updateVeiculo('combustivel', e.target.value)}
-              >
-                <option value="">Selecione...</option>
-                {['Gasolina', 'Etanol', 'Flex Misturado', 'Diesel', 'GNV'].map(v => (
-                  <option key={v} value={v}>{v}</option>
-                ))}
-              </select>
-            </div>
+
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Câmbio</label>
+            <select
+              name="transmission"
+              value={formData.vehicle.transmission}
+              onChange={handleVehicleChange}
+              className="w-full bg-slate-900 border-2 border-slate-800 rounded-2xl px-5 py-4 text-white focus:border-[#F59E0B] outline-none appearance-none transition-all font-medium"
+            >
+              <option>Manual</option>
+              <option>Automático</option>
+              <option>Automatizado</option>
+            </select>
+          </div>
+
+          <div className="md:col-span-2 space-y-2">
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Combustível</label>
+            <select
+              name="fuel"
+              value={formData.vehicle.fuel}
+              onChange={handleVehicleChange}
+              className="w-full bg-slate-900 border-2 border-slate-800 rounded-2xl px-5 py-4 text-white focus:border-[#F59E0B] outline-none appearance-none transition-all font-medium"
+            >
+              <option>Flex</option>
+              <option>Gasolina</option>
+              <option>Etanol</option>
+              <option>Diesel</option>
+              <option>GNV</option>
+            </select>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* GRUPO B: RELATO */}
-      <section className={sectionClass}>
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-yellow-900/30 text-yellow-400 rounded-lg"><HelpCircle size={20} /></div>
-          <h2 className="text-xl font-bold text-white uppercase tracking-tight">Grupo B: Relato</h2>
-        </div>
-        <label className={labelClass}>O que está acontecendo?</label>
-        <textarea 
-          rows={4}
-          className={`${inputClass} resize-none`}
-          placeholder="Descreva em detalhes o comportamento do veículo..."
-          value={data.relato}
-          onChange={(e) => onChange({...data, relato: e.target.value})}
+      {/* C. RELATO DO CLIENTE */}
+      <div className="bg-slate-800 p-8 rounded-[2.5rem] border border-slate-700/50 shadow-xl">
+        <SectionTitle icon={<MessageCircle size={20}/>}>Relato do Cliente</SectionTitle>
+        <textarea
+          value={formData.report}
+          onChange={(e) => setFormData(prev => ({ ...prev, report: e.target.value }))}
+          placeholder="Conte pro Seu Luna o que está acontecendo com o seu carro..."
+          className="w-full bg-slate-900 border-2 border-slate-800 rounded-3xl px-6 py-5 text-white focus:border-[#F59E0B] outline-none transition-all min-h-[140px] resize-none placeholder:text-slate-700 font-medium leading-relaxed"
         />
-      </section>
+      </div>
 
-      {/* GRUPO C: SINTOMAS */}
-      <section className={sectionClass}>
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-red-900/30 text-red-400 rounded-lg"><Activity size={20} /></div>
-          <h2 className="text-xl font-bold text-white uppercase tracking-tight">Grupo C: Sintomas</h2>
+      {/* D. CHECKLIST DE SINTOMAS */}
+      <div className="bg-slate-800 p-8 rounded-[2.5rem] border border-slate-700/50 shadow-xl space-y-10">
+        <div>
+          <SectionTitle icon={<Activity size={20}/>}>Barulhos</SectionTitle>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {['Estalo/Tec-Tec', 'Ronco/Zumbido', 'Assobio', 'Batida Seca', 'Grilo'].map(s => (
+              <CheckboxItem 
+                key={s} 
+                label={s} 
+                checked={formData.symptoms.noises.includes(s)} 
+                onClick={() => handleToggleSymptom('noises', s)} 
+              />
+            ))}
+          </div>
+          <OthersInput 
+            value={formData.symptoms.othersNoises || ''} 
+            onChange={(val) => setFormData(p => ({ ...p, symptoms: { ...p.symptoms, othersNoises: val }}))}
+            placeholder="Algum outro barulho específico?" 
+          />
         </div>
 
-        <div className="space-y-8">
-          {/* Barulhos */}
-          <div>
-            <h3 className="text-slate-300 font-bold mb-4 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span> Barulhos
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {['Sem barulho', 'Estalo/Tec-Tec', 'Ronco/Zumbido', 'Assobio/Chiado', 'Batida Seca', 'Grilo/Rangido', 'Detonação (Batida de pino)'].map(s => (
-                <label key={s} className={checkboxClass}>
-                  <input 
-                    type="checkbox" 
-                    checked={data.sintomas.barulhos.includes(s)}
-                    onChange={() => toggleSintoma('barulhos', s)}
-                    className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-yellow-500 focus:ring-yellow-500"
-                  />
-                  <span className="text-sm text-slate-400 group-hover:text-slate-200 transition-colors">{s}</span>
-                </label>
-              ))}
-            </div>
+        <div>
+          <SectionTitle icon={<Zap size={20}/>}>Sensações</SectionTitle>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {['Vibração', 'Motor Fraco', 'Falhando', 'Partida Difícil', 'Trancos Câmbio', 'Direção Puxando', 'Freio Ruim'].map(s => (
+              <CheckboxItem 
+                key={s} 
+                label={s} 
+                checked={formData.symptoms.sensations.includes(s)} 
+                onClick={() => handleToggleSymptom('sensations', s)} 
+              />
+            ))}
           </div>
-
-          {/* Sensações */}
-          <div>
-            <h3 className="text-slate-300 font-bold mb-4 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span> Sensações
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {['Vibração', 'Motor Fraco', 'Motor Falhando', 'Partida Difícil', 'Trancos Câmbio', 'Direção Puxando/Dura', 'Freio Ruim'].map(s => (
-                <label key={s} className={checkboxClass}>
-                  <input 
-                    type="checkbox" 
-                    checked={data.sintomas.sensacoes.includes(s)}
-                    onChange={() => toggleSintoma('sensacoes', s)}
-                    className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-yellow-500 focus:ring-yellow-500"
-                  />
-                  <span className="text-sm text-slate-400 group-hover:text-slate-200 transition-colors">{s}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {/* Visual/Alertas */}
-          <div>
-            <h3 className="text-slate-300 font-bold mb-4 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span> Visual/Alertas
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {['Luz Injeção', 'Luz Bateria', 'Luz Óleo', 'Luz Temperatura', 'Fumaça no Escape', 'Cheiro Queimado/Combustível', 'Vazamento'].map(s => (
-                <label key={s} className={checkboxClass}>
-                  <input 
-                    type="checkbox" 
-                    checked={data.sintomas.visual.includes(s)}
-                    onChange={() => toggleSintoma('visual', s)}
-                    className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-yellow-500 focus:ring-yellow-500"
-                  />
-                  <span className="text-sm text-slate-400 group-hover:text-slate-200 transition-colors">{s}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* GRUPO D: CONTEXTO */}
-      <section className={sectionClass}>
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-green-900/30 text-green-400 rounded-lg"><History size={20} /></div>
-          <h2 className="text-xl font-bold text-white uppercase tracking-tight">Grupo D: Contexto</h2>
+          <OthersInput 
+            value={formData.symptoms.othersSensations || ''} 
+            onChange={(val) => setFormData(p => ({ ...p, symptoms: { ...p.symptoms, othersSensations: val }}))}
+            placeholder="Alguma outra sensação estranha?" 
+          />
         </div>
 
+        <div>
+          <SectionTitle icon={<Thermometer size={20}/>}>Painel / Visuais</SectionTitle>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {['Luz Injeção', 'Luz Bateria', 'Luz Óleo', 'Luz Temperatura', 'Fumaça', 'Vazamento'].map(s => (
+              <CheckboxItem 
+                key={s} 
+                label={s} 
+                checked={formData.symptoms.dashboard.includes(s)} 
+                onClick={() => handleToggleSymptom('dashboard', s)} 
+              />
+            ))}
+          </div>
+          <OthersInput 
+            value={formData.symptoms.othersDashboard || ''} 
+            onChange={(val) => setFormData(p => ({ ...p, symptoms: { ...p.symptoms, othersDashboard: val }}))}
+            placeholder="Outra luz ou detalhe visual?" 
+          />
+        </div>
+      </div>
+
+      {/* E. CONTEXTO (GATILHOS) */}
+      <div className="bg-slate-800 p-8 rounded-[2.5rem] border border-slate-700/50 shadow-xl">
+        <SectionTitle icon={<Info size={20}/>}>Contexto (Gatilhos)</SectionTitle>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div>
-            <label className={labelClass}>Frequência</label>
-            <select 
-              className={inputClass}
-              value={data.contexto.frequencia}
-              onChange={(e) => onChange({...data, contexto: {...data.contexto, frequencia: e.target.value}})}
-            >
-              <option value="">Selecione...</option>
-              <option value="Acontece SEMPRE">Acontece SEMPRE</option>
-              <option value="Acontece AS VEZES">Acontece AS VEZES</option>
-            </select>
-
-            <div className="mt-6">
-              <label className={labelClass}>Condição</label>
-              <div className="grid grid-cols-2 gap-2">
-                {['Só Frio', 'Só Quente', 'Alta Velocidade', 'Baixa Velocidade', 'Ao Frear', 'Ao Virar', 'Em Buracos'].map(c => (
-                  <label key={c} className={checkboxClass}>
-                    <input 
-                      type="checkbox" 
-                      checked={data.contexto.condicoes.includes(c)}
-                      onChange={() => toggleCondicao(c)}
-                      className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-yellow-500 focus:ring-yellow-500"
-                    />
-                    <span className="text-sm text-slate-400 group-hover:text-slate-200 transition-colors">{c}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <label className={labelClass}>Histórico Recente</label>
-            <div className="grid grid-cols-1 gap-2">
-              {['Lavagem Motor', 'Abastecimento Diferente', 'Buraco/Enchente', 'Troca Bateria', 'Instalação Acessório', 'Carro Parado'].map(h => (
-                <label key={h} className={checkboxClass}>
-                  <input 
-                    type="checkbox" 
-                    checked={data.contexto.historico.includes(h)}
-                    onChange={() => toggleHistorico(h)}
-                    className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-yellow-500 focus:ring-yellow-500"
-                  />
-                  <span className="text-sm text-slate-400 group-hover:text-slate-200 transition-colors">{h}</span>
-                </label>
+          <div className="space-y-3">
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Frequência</label>
+            <div className="flex flex-wrap bg-slate-900 p-1.5 rounded-2xl border-2 border-slate-800 gap-1">
+              {['Sempre', 'Às Vezes', 'Uma vez', 'Não sei informar'].map(opt => (
+                <button
+                  key={opt}
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, context: { ...prev.context, frequency: opt } }))}
+                  className={`flex-1 min-w-[100px] py-3 rounded-xl text-xs font-black transition-all ${
+                    formData.context.frequency === opt ? 'bg-[#F59E0B] text-slate-900 shadow-lg' : 'text-slate-500 hover:text-slate-400'
+                  }`}
+                >
+                  {opt}
+                </button>
               ))}
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* BOTÃO DE AÇÃO */}
-      <div className="sticky bottom-6 mt-12 px-4 flex justify-center">
-        <button
-          onClick={onSubmit}
-          disabled={loading || !data.veiculo.marcaModelo || !data.relato}
-          className={`
-            w-full max-w-md py-4 px-8 rounded-2xl font-bold text-lg uppercase tracking-wider shadow-2xl transition-all
-            ${loading 
-              ? 'bg-slate-700 text-slate-400 cursor-not-allowed' 
-              : 'bg-yellow-500 hover:bg-yellow-400 text-slate-900 shadow-yellow-500/30 hover:-translate-y-1 active:scale-95'
-            }
-          `}
-        >
-          {loading ? (
-            <div className="flex items-center justify-center gap-3">
-              <div className="w-5 h-5 border-2 border-slate-400 border-t-transparent rounded-full animate-spin"></div>
-              Processando Diagnóstico...
+          <div className="space-y-3">
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Condição</label>
+            <select
+              value={formData.context.condition}
+              onChange={(e) => setFormData(prev => ({ ...prev, context: { ...prev.context, condition: e.target.value } }))}
+              className="w-full bg-slate-900 border-2 border-slate-800 rounded-2xl px-5 py-4 text-white focus:border-[#F59E0B] outline-none appearance-none transition-all font-medium"
+            >
+              <option>Não sei informar</option>
+              <option>Frio</option>
+              <option>Quente</option>
+              <option>Velocidade</option>
+              <option>Buracos</option>
+            </select>
+            <OthersInput 
+              value={formData.context.othersCondition || ''} 
+              onChange={(val) => setFormData(p => ({ ...p, context: { ...p.context, othersCondition: val }}))}
+              placeholder="Alguma outra condição específica?" 
+            />
+          </div>
+          <div className="md:col-span-2 space-y-3">
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1 mb-1 block">Histórico Recente</label>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {['Lavagem', 'Abastecimento', 'Enchente', 'Bateria', 'Acessório'].map(h => (
+                <CheckboxItem 
+                  key={h} 
+                  label={h} 
+                  checked={formData.context.history.includes(h)} 
+                  onClick={() => handleToggleHistory(h)} 
+                />
+              ))}
             </div>
+            <OthersInput 
+              value={formData.context.othersHistory || ''} 
+              onChange={(val) => setFormData(p => ({ ...p, context: { ...p.context, othersHistory: val }}))}
+              placeholder="Outro evento recente (ex: troca de óleo, oficina...)" 
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* F. BOTÃO DE AÇÃO */}
+      <div className="pt-6">
+        <button
+          type="submit"
+          disabled={isLoading}
+          className={`w-full py-6 px-10 rounded-3xl bg-[#F59E0B] text-[#1E293B] font-black text-2xl shadow-2xl shadow-amber-500/20 hover:scale-[1.02] active:scale-98 transition-all flex items-center justify-center gap-4 group ${
+            isLoading ? 'opacity-80 cursor-not-allowed' : 'hover:bg-amber-400'
+          }`}
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="animate-spin" size={28} />
+              ANALISANDO...
+            </>
           ) : (
-            "Gerar Diagnóstico Profissional"
+            <>
+              ANALISAR COM O SEU LUNA
+              <Wrench size={28} className="group-hover:rotate-12 transition-transform" />
+            </>
           )}
         </button>
       </div>
-    </div>
+    </form>
   );
 };
 

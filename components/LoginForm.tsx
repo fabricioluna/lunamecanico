@@ -1,96 +1,79 @@
 
 import React, { useState } from 'react';
-import { Lock } from 'lucide-react';
+import { Lock, ArrowRight } from 'lucide-react';
 
-interface LoginFormProps { onLogin: () => void; }
+interface LoginFormProps {
+  onLogin: (password: string) => void;
+  error: string | null;
+}
 
-const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
-  const [pass, setPass] = useState('');
-  const [error, setError] = useState(false);
+const LoginForm: React.FC<LoginFormProps> = ({ onLogin, error }) => {
+  const [password, setPassword] = useState('');
 
-  const handle = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (pass === 'luna1989') onLogin();
-    else { 
-      setError(true); 
-      setTimeout(() => setError(false), 2000); 
-    }
+    onLogin(password);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#27345b] p-4 relative overflow-hidden">
-      {/* Elementos decorativos de fundo */}
-      <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#f6a700] rounded-full blur-[150px] opacity-10"></div>
-      <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-400 rounded-full blur-[150px] opacity-10"></div>
-
-      <div className="w-full max-w-sm z-10 animate-fade-in">
-        {/* Logo Superior */}
-        <div className="flex justify-center mb-8">
+    <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md bg-slate-800 rounded-[2.5rem] p-10 shadow-2xl border border-slate-700/50 amber-glow relative overflow-hidden">
+        {/* Decoração de fundo sutil */}
+        <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#F59E0B] opacity-[0.03] rounded-full blur-3xl"></div>
+        
+        <div className="flex flex-col items-center mb-10 relative z-10">
           <img 
-            src="./logo.png" 
-            alt="Luna Autopeças" 
-            className="h-32 object-contain drop-shadow-2xl" 
-            onError={e => e.currentTarget.style.display='none'} 
+            src="logo.png" 
+            alt="Luna Logo" 
+            className="h-20 mb-6 drop-shadow-xl" 
+            onError={(e) => (e.currentTarget.style.display = 'none')}
           />
+          <h1 className="text-4xl font-black text-[#F59E0B] text-center tracking-tight uppercase">Seu Luna</h1>
+          <p className="text-slate-400 text-center mt-1 font-medium tracking-wide uppercase text-sm">Mecânico Virtual</p>
         </div>
 
-        {/* Personagem Seu Luna centralizado e sobreposto ao card */}
-        <div className="flex justify-center -mb-24 relative z-20">
-          <img 
-            src="./personagem.png" 
-            alt="Seu Luna"
-            className="w-48 h-auto drop-shadow-[0_25px_35px_rgba(0,0,0,0.6)]" 
-            onError={e => e.currentTarget.src='https://img.icons8.com/bubbles/500/maintenance.png'} 
-          />
-        </div>
-
-        {/* Card de Entrada */}
-        <div className="bg-white rounded-[3rem] p-8 pt-28 shadow-[0_30px_60px_rgba(0,0,0,0.4)] border border-white/20">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-black text-[#27345b] italic tracking-tighter uppercase leading-none">Mecânico Virtual</h2>
-            <p className="text-[#f6a700] text-[10px] font-extrabold uppercase tracking-[0.4em] mt-1.5">Diagnóstico Inteligente</p>
-          </div>
-
-          <form onSubmit={handle} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Senha de Acesso</label>
             <div className="relative group">
-              <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#f6a700] transition-colors" size={20} />
-              <input 
-                type="password" 
-                placeholder="SENHA DE ACESSO" 
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <Lock className="h-5 w-5 text-slate-600 group-focus-within:text-[#F59E0B] transition-colors" />
+              </div>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="block w-full pl-12 pr-4 py-4 bg-slate-900 border-2 border-slate-700 rounded-2xl text-white placeholder-slate-700 focus:outline-none focus:border-[#F59E0B] transition-all font-mono"
+                placeholder="••••••••"
+                required
                 autoFocus
-                className={`w-full pl-14 pr-4 py-5 bg-slate-50 border-2 ${error ? 'border-red-500 animate-shake' : 'border-slate-100 focus:border-[#f6a700]'} rounded-3xl outline-none text-center font-mono text-2xl text-[#27345b] transition-all`}
-                value={pass}
-                onChange={e => setPass(e.target.value)}
               />
             </div>
-            
-            <button className="w-full bg-[#f6a700] hover:bg-[#e59600] text-white font-black py-5 rounded-3xl shadow-xl shadow-[#f6a700]/30 transition-all active:scale-95 uppercase tracking-widest text-lg">
-              ACESSAR PORTAL
-            </button>
-            
-            {error && (
-              <div className="bg-red-50 text-red-600 text-xs text-center font-bold py-3 rounded-xl border border-red-100 animate-pulse">
-                ACESSO NEGADO! VERIFIQUE A SENHA.
-              </div>
-            )}
-          </form>
-          
-          <div className="mt-8 text-center border-t border-slate-100 pt-6">
-            <p className="text-slate-300 text-[9px] font-bold uppercase tracking-widest leading-relaxed">
-              Luna Autopeças e Serviços <br/> Excelência em cada detalhe
-            </p>
           </div>
+
+          {error && (
+            <div className="bg-red-900/20 border border-red-500/50 p-4 rounded-2xl text-red-400 text-sm flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+              <div className="shrink-0 w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+              {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            className="w-full py-5 bg-[#F59E0B] text-slate-900 font-black rounded-2xl hover:bg-amber-400 active:scale-95 transition-all flex items-center justify-center gap-3 shadow-xl shadow-amber-500/10 group uppercase text-lg"
+          >
+            Acessar Sistema 
+            <ArrowRight size={22} className="group-hover:translate-x-1 transition-transform" />
+          </button>
+        </form>
+
+        <div className="mt-10 pt-8 border-t border-slate-700/50 text-center relative z-10">
+          <p className="text-slate-500 text-xs font-bold uppercase tracking-widest leading-relaxed">
+            @ 2026 Luna Autopeças e Serviços<br/>
+            <span className="text-slate-600 font-medium">Desenvolvido por Fabrício Luna</span>
+          </p>
         </div>
       </div>
-      
-      <style>{`
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(-10px); }
-          75% { transform: translateX(10px); }
-        }
-        .animate-shake { animation: shake 0.3s ease-in-out; }
-      `}</style>
     </div>
   );
 };
