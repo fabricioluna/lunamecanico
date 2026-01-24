@@ -27,36 +27,36 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin, error }) => {
           <img 
             src="logo.png" 
             alt="Luna Logo" 
-            className="h-14 mb-8 drop-shadow-xl opacity-80" 
+            className="h-14 mb-10 drop-shadow-xl" 
             onError={(e) => (e.currentTarget.style.display = 'none')}
           />
           
-          {/* Mascote Seu Luna */}
-          <div className="relative group">
-            <div className="absolute -inset-4 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/20 transition-all duration-700"></div>
+          {/* Mascote Seu Luna - Destaque Máximo */}
+          <div className="relative group mb-6">
+            <div className="absolute -inset-6 bg-amber-500/10 rounded-full blur-3xl group-hover:bg-amber-500/20 transition-all duration-700"></div>
             <img 
               src="seuluna.png" 
               alt="Seu Luna" 
-              className="relative w-48 h-48 md:w-56 md:h-56 object-contain mb-2 drop-shadow-[0_20px_30px_rgba(0,0,0,0.5)] transform hover:scale-105 transition-transform duration-500"
+              className="relative w-56 h-56 md:w-64 md:h-64 object-contain drop-shadow-[0_25px_35px_rgba(0,0,0,0.6)] transform hover:scale-105 transition-transform duration-500"
               onError={(e) => {
                 e.currentTarget.src = 'https://api.dicebear.com/7.x/avataaars/svg?seed=SeuLuna&baseColor=f59e0b';
               }}
             />
           </div>
 
-          <div className="mt-6 text-center">
+          <div className="text-center">
             <h1 className="text-4xl font-black text-[#F59E0B] tracking-tight uppercase leading-tight">
               Seu Luna
             </h1>
-            <p className="text-slate-400 font-bold tracking-wide uppercase text-xs mt-2 opacity-70">
-              O seu mecânico virtual
+            <p className="text-slate-400 font-bold tracking-wide uppercase text-[10px] mt-1 opacity-70">
+              Mecânico Virtual Luna Autopeças
             </p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
           <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Senha de Acesso</label>
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Senha de Acesso</label>
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <Lock className="h-5 w-5 text-slate-600 group-focus-within:text-[#F59E0B] transition-colors" />
@@ -74,25 +74,25 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin, error }) => {
           </div>
 
           {error && (
-            <div className="bg-red-900/20 border border-red-500/50 p-4 rounded-2xl text-red-400 text-sm flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
-              <div className="shrink-0 w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+            <div className="bg-red-900/20 border border-red-500/50 p-4 rounded-2xl text-red-400 text-xs font-bold flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+              <div className="shrink-0 w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></div>
               {error}
             </div>
           )}
 
           <button
             type="submit"
-            className="w-full py-5 bg-[#F59E0B] text-slate-900 font-black rounded-2xl hover:bg-amber-400 active:scale-95 transition-all flex items-center justify-center gap-3 shadow-xl shadow-amber-500/20 group uppercase text-lg"
+            className="w-full py-5 bg-[#F59E0B] text-slate-900 font-black rounded-2xl hover:bg-amber-400 active:scale-95 transition-all flex items-center justify-center gap-3 shadow-xl shadow-amber-500/10 group uppercase text-base tracking-tight"
           >
-            Acessar Oficina 
-            <ArrowRight size={22} className="group-hover:translate-x-1 transition-transform" />
+            Entrar na Oficina
+            <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
           </button>
         </form>
 
         <div className="mt-10 pt-8 border-t border-slate-700/50 text-center relative z-10">
-          <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest leading-relaxed">
-            @ 2026 Luna Autopeças e Serviços<br/>
-            <span className="text-slate-600 font-medium">Diagnóstico Automotivo Inteligente</span>
+          <p className="text-slate-600 text-[9px] font-black uppercase tracking-widest leading-relaxed">
+            @ Luna Autopeças e Serviços Automotivos<br/>
+            <span className="opacity-50">Tecnologia de Diagnóstico Inteligente</span>
           </p>
         </div>
       </div>
