@@ -122,7 +122,7 @@ const App: React.FC = () => {
             )}
 
             {diagnosis && !isAnalyzing && (
-              <div className="bg-slate-800 p-8 md:p-16 rounded-[3rem] border-t-8 border-[#F59E0B] shadow-2xl amber-glow animate-in fade-in zoom-in duration-500 overflow-hidden relative print:bg-white print:text-slate-900 print:border-slate-300 print:p-0 print:shadow-none print:amber-glow-none print:rounded-none print:border-t-0">
+              <div className="bg-slate-800 p-8 md:p-16 rounded-[3rem] border-t-8 border-[#F59E0B] shadow-2xl amber-glow animate-in fade-in zoom-in duration-500 overflow-hidden relative print:bg-white print:text-slate-900 print:border-slate-300 print:p-8 print:shadow-none print:amber-glow-none print:rounded-none print:border-t-0">
                 <div className="absolute top-10 right-10 opacity-[0.03] pointer-events-none print:hidden">
                   <Wrench size={400} />
                 </div>
@@ -164,14 +164,14 @@ const App: React.FC = () => {
                   prose-p:font-medium
                   prose-p:text-justify
                   prose-p:leading-relaxed
-                  prose-p:mb-6
+                  prose-p:mb-8
                   prose-strong:text-[#F59E0B]
                   prose-li:text-slate-300
                   prose-li:marker:text-[#F59E0B]
                   prose-blockquote:border-[#F59E0B]
                   prose-blockquote:bg-slate-900/50
-                  prose-blockquote:py-2
-                  prose-blockquote:px-6
+                  prose-blockquote:py-4
+                  prose-blockquote:px-8
                   prose-blockquote:rounded-r-xl
                   print:prose-headings:text-slate-900
                   print:prose-p:text-slate-800
