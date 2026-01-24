@@ -1,115 +1,143 @@
-// ==========================================
-// CONFIGURAÇÃO DA API (COLOQUE SUA CHAVE AQUI)
-// ==========================================
-const API_KEY = 'COLE_SUA_CHAVE_DO_GOOGLE_STUDIO_AQUI'; 
+// =======================================================
+// 🔑 CONFIGURAÇÃO
+// =======================================================
+// Substitua pela sua chave real do Google AI Studio
+const API_KEY = 'COLE_SUA_CHAVE_AQUI'; 
 
-// ==========================================
-// LÓGICA DE LOGIN
-// ==========================================
-document.getElementById('login-form').addEventListener('submit', function(e) {
-    e.preventDefault();
+document.addEventListener('DOMContentLoaded', function() {
     
-    const passwordInput = document.getElementById('password-input');
-    const errorMsg = document.getElementById('login-error');
-    const loginScreen = document.getElementById('login-screen');
-    const appScreen = document.getElementById('app-screen');
+    // ---------------------------------------------------
+    // 1. LÓGICA DE LOGIN
+    // ---------------------------------------------------
+    const loginForm = document.getElementById('login-form');
+    
+    if (loginForm) {
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const passwordInput = document.getElementById('password-input');
+            const errorMsg = document.getElementById('login-error');
+            const loginScreen = document.getElementById('login-screen');
+            const appScreen = document.getElementById('app-screen');
 
-    // Senha definida: luna1989
-    if (passwordInput.value === 'luna1989') {
-        // Sucesso
-        errorMsg.classList.add('hidden');
-        
-        // Efeito visual de transição
-        loginScreen.style.opacity = '0';
-        loginScreen.style.transition = 'opacity 0.5s ease';
-        
-        setTimeout(() => {
-            loginScreen.classList.add('hidden');
-            appScreen.classList.remove('hidden');
-            window.scrollTo(0,0);
-        }, 500);
+            const senhaDigitada = passwordInput.value.trim();
 
-    } else {
-        // Erro
-        errorMsg.classList.remove('hidden');
-        passwordInput.classList.add('border-red-500');
-        
-        // Animação de tremor
-        passwordInput.style.animation = "shake 0.5s";
-        setTimeout(() => passwordInput.style.animation = "none", 500);
+            if (senhaDigitada === 'luna1989') {
+                // Login Sucesso
+                errorMsg.classList.add('hidden');
+                
+                // Animação Fade Out
+                loginScreen.style.opacity = '0';
+                loginScreen.style.transition = 'opacity 0.5s ease';
+                
+                setTimeout(() => {
+                    loginScreen.style.display = 'none';
+                    appScreen.classList.remove('hidden');
+                    // Reset scroll
+                    window.scrollTo(0,0);
+                }, 500);
+
+            } else {
+                // Erro
+                errorMsg.classList.remove('hidden');
+                passwordInput.classList.add('border-red-500');
+                passwordInput.classList.remove('border-amber-500/30');
+            }
+        });
+
+        // Limpar erro ao digitar
+        const passInput = document.getElementById('password-input');
+        passInput.addEventListener('input', function() {
+            this.classList.remove('border-red-500');
+            this.classList.add('border-amber-500/30');
+            document.getElementById('login-error').classList.add('hidden');
+        });
+    }
+
+    // ---------------------------------------------------
+    // 2. BOTÃO DE ANÁLISE (IA)
+    // ---------------------------------------------------
+    const btnAnalisar = document.getElementById('btn-analisar');
+    if (btnAnalisar) {
+        btnAnalisar.addEventListener('click', analisarComIA);
     }
 });
 
-// Remove erro ao digitar
-document.getElementById('password-input').addEventListener('input', function() {
-    this.classList.remove('border-red-500');
-    document.getElementById('login-error').classList.add('hidden');
-});
-
-// Função de Logout
+// Função Logout
 function logout() {
     location.reload();
 }
 
-// ==========================================
-// LÓGICA DA INTELIGÊNCIA ARTIFICIAL
-// ==========================================
+// ---------------------------------------------------
+// 3. LÓGICA DO SEU LUNA (GEMINI API)
+// ---------------------------------------------------
 async function analisarComIA() {
-    // 1. Pegar elementos
     const btn = document.getElementById('btn-analisar');
-    const originalText = btn.innerHTML;
+    const originalContent = btn.innerHTML;
     const resultadoContainer = document.getElementById('resultado-container');
     const resultadoTexto = document.getElementById('resultado-texto');
 
-    // 2. Pegar dados do formulário
+    // Coleta de Dados
     const modelo = document.getElementById('modelo').value;
     const relato = document.getElementById('relato').value;
-    
-    // Validação Simples
-    if (!modelo || !relato) {
-        alert("Ops! O Seu Luna precisa saber pelo menos o Modelo do carro e o Relato do problema.");
-        return;
-    }
+    const placa = document.getElementById('placa').value;
+    const ano = document.getElementById('ano').value;
+    const km = document.getElementById('km').value;
+    const motor = document.getElementById('motor').value;
+    const cambio = document.getElementById('cambio').value;
 
-    // Coletar checkboxes
+    // Checkboxes (Sintomas e Gatilhos)
     let sintomas = [];
     document.querySelectorAll('.sintoma:checked').forEach(el => sintomas.push(el.value));
     
     let gatilhos = [];
     document.querySelectorAll('.gatilho:checked').forEach(el => gatilhos.push(el.value));
+    
+    // Radio Button (Frequência)
+    const frequenciaEl = document.querySelector('input[name="frequencia"]:checked');
+    const frequencia = frequenciaEl ? frequenciaEl.value : "Não informado";
+    
+    const condicao = document.getElementById('condicao').value;
 
-    // 3. UI de Carregamento
+    // Validação
+    if (!modelo || !relato) {
+        alert("Opa! O Seu Luna precisa saber pelo menos o Modelo do carro e o Relato do problema.");
+        return;
+    }
+
+    // UI Loading
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-cog fa-spin"></i> SEU LUNA ESTÁ PENSANDO...';
+    btn.innerHTML = '<i class="fas fa-cog fa-spin"></i> O SEU LUNA ESTÁ PENSANDO...';
     btn.classList.add('opacity-75', 'cursor-not-allowed');
 
-    // 4. Montar o Prompt
+    // Prompt
     const prompt = `
-    Atue como o SEU LUNA, mecânico chefe da Luna Autopeças.
+    Atue como o SEU LUNA, um mecânico experiente, simpático e honesto da Luna Autopeças.
     
-    DADOS DO CARRO:
-    - Veículo: ${modelo}
-    - Ano/KM: ${document.getElementById('ano').value} / ${document.getElementById('km').value}
-    - Motor/Câmbio: ${document.getElementById('motor').value} / ${document.getElementById('cambio').value}
+    DADOS DO CLIENTE:
+    - Veículo: ${modelo} ${placa ? `(${placa})` : ''}
+    - Detalhes: Ano ${ano}, KM ${km}, Motor ${motor}, Câmbio ${cambio}
     
-    PROBLEMA:
-    - Relato: "${relato}"
-    - Sintomas: ${sintomas.join(', ') || 'Nenhum marcado'}
-    - Quando ocorre: ${document.getElementById('frequencia').value}, ${gatilhos.join(', ')}
+    QUEIXA:
+    "${relato}"
+    
+    OBSERVAÇÕES TÉCNICAS:
+    - Sintomas marcados: ${sintomas.join(', ') || 'Nenhum'}
+    - Contexto: Acontece ${frequencia}. Condição: ${condicao}.
+    - Histórico recente: ${gatilhos.join(', ') || 'Nada relevante'}
 
     INSTRUÇÃO:
-    Dê um diagnóstico amigável e técnico. Use formatação Markdown.
-    Estrutura da resposta:
-    1. Saudação do Seu Luna.
-    2. O que parece ser (Diagnóstico provável).
-    3. Por que isso acontece (Explicação).
-    4. Sugestão do que fazer (Teste rápido ou serviço).
+    Gere um diagnóstico técnico em Markdown.
+    1. Saudação do Seu Luna (use emojis).
+    2. Título do provável defeito.
+    3. Explicação simples do porquê (Causalidade).
+    4. Lista de 3 principais suspeitas (Ranking).
+    5. Recomendação de teste ou serviço na oficina.
     `;
 
-    // 5. Chamada API (Google Gemini)
     try {
-        if(API_KEY === 'COLE_SUA_CHAVE_DO_GOOGLE_STUDIO_AQUI') {
-            throw new Error("Chave da API não configurada no código.");
+        if(API_KEY === 'COLE_SUA_CHAVE_AQUI') {
+            throw new Error("Chave da API não configurada.");
         }
 
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`, {
@@ -119,33 +147,25 @@ async function analisarComIA() {
         });
 
         const data = await response.json();
+
+        if (data.error) throw new Error(data.error.message);
+
         const textResponse = data.candidates[0].content.parts[0].text;
 
-        // 6. Exibir Resultado
+        // Renderizar
         resultadoTexto.innerHTML = marked.parse(textResponse);
         resultadoContainer.classList.remove('hidden');
-        resultadoContainer.scrollIntoView({ behavior: 'smooth' });
+        
+        // Scroll
+        setTimeout(() => {
+            resultadoContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
 
     } catch (error) {
-        console.error(error);
-        alert("Erro ao conectar com o Seu Luna: " + error.message);
+        alert("Erro no diagnóstico: " + error.message);
     } finally {
-        // Restaurar Botão
         btn.disabled = false;
-        btn.innerHTML = originalText;
+        btn.innerHTML = originalContent;
         btn.classList.remove('opacity-75', 'cursor-not-allowed');
     }
 }
-
-// CSS Inline para animação de shake (erro de senha)
-const style = document.createElement('style');
-style.innerHTML = `
-@keyframes shake {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  50% { transform: translateX(5px); }
-  75% { transform: translateX(-5px); }
-  100% { transform: translateX(0); }
-}
-`;
-document.head.appendChild(style);
