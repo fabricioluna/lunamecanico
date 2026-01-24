@@ -17,7 +17,6 @@
 
     <section id="login-screen" class="min-h-screen flex items-center justify-center p-4 bg-[#0f172a]">
         <div class="w-full max-w-[400px] bg-[#1e293b] rounded-3xl p-8 shadow-2xl border border-slate-700/50 text-center relative overflow-hidden">
-            
             <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500/0 via-amber-500/50 to-amber-500/0"></div>
 
             <div class="mb-4 mx-auto w-72 h-72 flex items-center justify-center z-10 relative">
@@ -44,7 +43,6 @@
                     class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-900 font-bold py-4 rounded-xl shadow-lg transition-transform transform active:scale-95 flex items-center justify-center gap-2">
                     ENTRAR NA OFICINA <i class="fas fa-arrow-right"></i>
                 </button>
-                
                 <p id="login-error" class="text-red-400 text-sm hidden mt-3 bg-red-900/20 py-2 rounded-lg animate-pulse"><i class="fas fa-exclamation-circle"></i> Senha incorreta.</p>
             </form>
 
@@ -76,133 +74,207 @@
                 <div class="bg-[#1e293b] border border-slate-700 p-6 rounded-2xl shadow-lg relative max-w-lg w-full">
                     <div class="absolute -left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-[#1e293b] border-l border-b border-slate-700 rotate-45 hidden md:block"></div>
                     <h2 class="text-amber-500 font-bold text-xl mb-1">OLÁ! SOU O SEU LUNA.</h2>
-                    <p class="text-slate-300 font-medium">Preencha os dados técnicos abaixo que eu vou te ajudar a descobrir o problema do seu carro agora mesmo! 🛠️</p>
+                    <p class="text-slate-300 font-medium">Preencha o formulário técnico abaixo. Quanto mais detalhes, mais preciso será meu diagnóstico! 🛠️</p>
                 </div>
             </div>
 
             <div class="luna-card mb-8">
-                <h3 class="section-title"><i class="fas fa-car-side"></i> DADOS TÉCNICOS DO VEÍCULO</h3>
+                <h3 class="section-title"><i class="fas fa-car"></i> 1. IDENTIFICAÇÃO DO VEÍCULO</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="md:col-span-2">
                         <label class="input-label">Marca / Modelo *</label>
-                        <input type="text" id="modelo" class="luna-input" placeholder="Ex: Volkswagen Gol">
+                        <input type="text" id="modelo" class="luna-input" placeholder="Ex: Fiat Toro">
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="input-label">Ano</label>
-                            <input type="number" id="ano" class="luna-input" placeholder="2020">
+                            <input type="number" id="ano" class="luna-input" placeholder="Ex: 2021">
                         </div>
                         <div>
-                            <label class="input-label">KM</label>
-                            <input type="number" id="km" class="luna-input" placeholder="50000">
+                            <label class="input-label">KM Atual</label>
+                            <input type="number" id="km" class="luna-input" placeholder="Ex: 45000">
                         </div>
                     </div>
                     <div>
                         <label class="input-label">Motorização</label>
-                        <select id="motor" class="luna-input">
-                            <option value="1.0">1.0 / 1.0 Turbo</option>
-                            <option value="1.3">1.3 / 1.3 Turbo</option>
-                            <option value="1.4">1.4 / 1.4 Turbo</option>
-                            <option value="1.6">1.6</option>
-                            <option value="1.8">1.8</option>
-                            <option value="2.0">2.0+</option>
-                            <option value="Diesel">Diesel</option>
-                        </select>
+                        <input type="text" id="motor" class="luna-input" placeholder="Ex: 1.8 Flex, 2.0 Diesel...">
                     </div>
                     <div>
                         <label class="input-label">Câmbio</label>
                         <select id="cambio" class="luna-input">
                             <option value="Manual">Manual</option>
                             <option value="Automático">Automático</option>
-                            <option value="Automatizado">Automatizado</option>
                         </select>
                     </div>
                 </div>
             </div>
 
             <div class="luna-card mb-8">
-                <h3 class="section-title"><i class="fas fa-comment-alt"></i> RELATO DO PROBLEMA</h3>
-                <textarea id="relato" rows="4" class="luna-input w-full" placeholder="Conte pro Seu Luna o que está acontecendo com o motor, barulhos, etc..."></textarea>
+                <h3 class="section-title"><i class="fas fa-exclamation-circle"></i> 2. O SINTOMA PRINCIPAL</h3>
+                
+                <h4 class="subsection-title mb-2">A. LUZES E PAINEL</h4>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Luz Injeção"><div class="card-content"><i class="fas fa-check-square"></i> Luz Injeção</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Luz Bateria"><div class="card-content"><i class="fas fa-check-square"></i> Luz Bateria</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Luz Temperatura"><div class="card-content"><i class="fas fa-check-square"></i> Luz Temp</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Luz ABS/Freio"><div class="card-content"><i class="fas fa-check-square"></i> Luz ABS/Freio</div></label>
+                </div>
+                <input type="text" id="outra-luz" class="luna-input mb-6" placeholder="Outra luz acesa? Digite aqui...">
+
+                <h4 class="subsection-title mb-2">B. COMPORTAMENTO DO MOTOR</h4>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Motor não liga (sem sinal)"><div class="card-content"><i class="fas fa-power-off"></i> Não liga (mudo)</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Motor gira mas não pega"><div class="card-content"><i class="fas fa-sync"></i> Gira e não pega</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Falha/Engasga"><div class="card-content"><i class="fas fa-wave-square"></i> Falha/Engasga</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Perda de Potência"><div class="card-content"><i class="fas fa-tachometer-alt-slow"></i> Sem Potência</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Consumo Excessivo"><div class="card-content"><i class="fas fa-gas-pump"></i> Consumo Alto</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Fumaça no Escape"><div class="card-content"><i class="fas fa-smog"></i> Fumaça</div></label>
+                </div>
+
+                <h4 class="subsection-title mb-2">C. DIREÇÃO E SUSPENSÃO</h4>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Volante Trepida"><div class="card-content"><i class="fas fa-dharmachakra"></i> Volante Vibra</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Carro Puxa Lado"><div class="card-content"><i class="fas fa-arrows-alt-h"></i> Puxa p/ lado</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Batida Seca Buraco"><div class="card-content"><i class="fas fa-bomb"></i> Batida Seca</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Barulho ao Virar"><div class="card-content"><i class="fas fa-sync-alt"></i> Barulho ao Virar</div></label>
+                </div>
+
+                <h4 class="subsection-title mb-2">D. FREIOS</h4>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Pedal Baixo"><div class="card-content"><i class="fas fa-shoe-prints"></i> Pedal Baixo</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Apito ao Frear"><div class="card-content"><i class="fas fa-volume-up"></i> Apito Agudo</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Ferro com Ferro"><div class="card-content"><i class="fas fa-tools"></i> Ferro c/ Ferro</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Vibração ao Frear"><div class="card-content"><i class="fas fa-vibrate"></i> Pedal Vibra</div></label>
+                </div>
             </div>
 
             <div class="luna-card mb-8">
-                <h4 class="subsection-title mb-3"><i class="fas fa-volume-up text-amber-500"></i> BARULHOS</h4>
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
-                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Estalo/Tec-Tec"><div class="card-content"><i class="far fa-check-square"></i> Estalo/Tec-Tec</div></label>
-                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Ronco/Zumbido"><div class="card-content"><i class="far fa-check-square"></i> Ronco/Zumbido</div></label>
-                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Assobio"><div class="card-content"><i class="far fa-check-square"></i> Assobio</div></label>
-                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Batida Seca"><div class="card-content"><i class="far fa-check-square"></i> Batida Seca</div></label>
-                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Grilo/Rangido"><div class="card-content"><i class="far fa-check-square"></i> Grilo</div></label>
+                <h3 class="section-title"><i class="fas fa-volume-mute"></i> 3. IDENTIFICAÇÃO DE RUÍDOS</h3>
+                
+                <h4 class="subsection-title mb-2">TIPO DO SOM</h4>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+                    <label class="sintoma-card"><input type="checkbox" class="ruido hidden" value="Grilo/Chiado"><div class="card-content">Grilo/Chiado</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="ruido hidden" value="Batida Metálica (TecTec)"><div class="card-content">Tec Tec Metálico</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="ruido hidden" value="Ronco/Zumbido"><div class="card-content">Ronco/Zumbido</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="ruido hidden" value="Sopro/Vazamento"><div class="card-content">Sopro de Ar</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="ruido hidden" value="Estalo (Clack)"><div class="card-content">Estalo (Clack)</div></label>
                 </div>
-                <input type="text" id="outro-barulho" class="luna-input mb-6" placeholder="Outro barulho? Digite aqui...">
 
-                <h4 class="subsection-title mb-3"><i class="fas fa-bolt text-amber-500"></i> SENSAÇÕES</h4>
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
-                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Vibração"><div class="card-content"><i class="far fa-check-square"></i> Vibração</div></label>
-                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Motor Fraco"><div class="card-content"><i class="far fa-check-square"></i> Motor Fraco</div></label>
-                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Falhando"><div class="card-content"><i class="far fa-check-square"></i> Falhando</div></label>
-                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Partida Difícil"><div class="card-content"><i class="far fa-check-square"></i> Partida Difícil</div></label>
-                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Freio Ruim"><div class="card-content"><i class="far fa-check-square"></i> Freio Ruim</div></label>
+                <h4 class="subsection-title mb-2">ONDE PARECE SER?</h4>
+                <div class="grid grid-cols-2 md:grid-cols-2 gap-3 mb-4">
+                    <label class="sintoma-card"><input type="checkbox" class="ruido hidden" value="Na Frente (Motor)"><div class="card-content">Frente / Motor</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="ruido hidden" value="Embaixo do Carro"><div class="card-content">Embaixo do Carro</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="ruido hidden" value="Nas Rodas"><div class="card-content">Nas Rodas</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="ruido hidden" value="Na Traseira"><div class="card-content">Traseira / Escape</div></label>
                 </div>
-                <input type="text" id="outra-sensacao" class="luna-input mb-6" placeholder="Outra sensação? Digite aqui...">
+            </div>
 
-                <h4 class="subsection-title mb-3"><i class="fas fa-exclamation-triangle text-amber-500"></i> PAINEL / VISUAIS</h4>
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
-                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Luz Injeção"><div class="card-content"><i class="far fa-check-square"></i> Luz Injeção</div></label>
-                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Luz Bateria"><div class="card-content"><i class="far fa-check-square"></i> Luz Bateria</div></label>
-                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Luz Temperatura"><div class="card-content"><i class="far fa-check-square"></i> Luz Temperatura</div></label>
-                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Fumaça"><div class="card-content"><i class="far fa-check-square"></i> Fumaça</div></label>
-                    <label class="sintoma-card"><input type="checkbox" class="sintoma hidden" value="Vazamento"><div class="card-content"><i class="far fa-check-square"></i> Vazamento</div></label>
+            <div class="luna-card mb-8">
+                <h3 class="section-title"><i class="fas fa-stopwatch"></i> 4. CONDIÇÕES (QUANDO ACONTECE?)</h3>
+                
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+                    <label class="sintoma-card"><input type="checkbox" class="condicao hidden" value="Motor Frio"><div class="card-content"><i class="fas fa-snowflake"></i> Só Frio</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="condicao hidden" value="Motor Quente"><div class="card-content"><i class="fas fa-fire"></i> Só Quente</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="condicao hidden" value="Independe Temp"><div class="card-content"><i class="fas fa-thermometer-half"></i> O Tempo Todo</div></label>
+                    
+                    <label class="sintoma-card"><input type="checkbox" class="condicao hidden" value="Marcha Lenta"><div class="card-content"><i class="fas fa-parking"></i> Parado/Lenta</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="condicao hidden" value="Ao Acelerar"><div class="card-content"><i class="fas fa-tachometer-alt"></i> Ao Acelerar</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="condicao hidden" value="Alta Velocidade"><div class="card-content"><i class="fas fa-road"></i> Alta Velocidade</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="condicao hidden" value="Em Lombadas"><div class="card-content"><i class="fas fa-archive"></i> Lombadas</div></label>
+                    
+                    <label class="sintoma-card"><input type="checkbox" class="condicao hidden" value="Dia de Chuva"><div class="card-content"><i class="fas fa-cloud-rain"></i> Dia de Chuva</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="condicao hidden" value="Dia Quente"><div class="card-content"><i class="fas fa-sun"></i> Dia Muito Quente</div></label>
                 </div>
-                <input type="text" id="outro-painel" class="luna-input" placeholder="Outro aviso ou detalhe? Digite aqui...">
+            </div>
+
+            <div class="luna-card mb-8">
+                <h3 class="section-title"><i class="fas fa-history"></i> 5. HISTÓRICO RECENTE</h3>
+                <div class="space-y-3">
+                    <label class="sintoma-card w-full"><input type="checkbox" class="historico hidden" value="Abastecimento Suspeito"><div class="card-content justify-between">Abasteceu em posto desconhecido? <span>SIM</span></div></label>
+                    <label class="sintoma-card w-full"><input type="checkbox" class="historico hidden" value="Carro Parado"><div class="card-content justify-between">Carro parado há mais de 2 semanas? <span>SIM</span></div></label>
+                    
+                    <label class="input-label block mt-2">Manutenção nos últimos 15 dias?</label>
+                    <input type="text" id="manutencao-recente" class="luna-input" placeholder="Se sim, o que foi feito?">
+                </div>
+            </div>
+
+            <div class="luna-card mb-8">
+                <h3 class="section-title"><i class="fas fa-wind"></i> 6. DIAGNÓSTICO OLFATIVO (CHEIROS)</h3>
+                <div class="grid grid-cols-2 md:grid-cols-2 gap-3">
+                    <label class="sintoma-card"><input type="checkbox" class="cheiro hidden" value="Combustível Cru"><div class="card-content">Combustível Cru</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="cheiro hidden" value="Ovo Podre"><div class="card-content">Ovo Podre</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="cheiro hidden" value="Adocicado"><div class="card-content">Adocicado (Radiador)</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="cheiro hidden" value="Borracha Queimada"><div class="card-content">Borracha Queimada</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="cheiro hidden" value="Óleo Queimado"><div class="card-content">Óleo Queimado</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="cheiro hidden" value="Embreagem/Freio"><div class="card-content">Embreagem/Freio</div></label>
+                </div>
+            </div>
+
+            <div class="luna-card mb-8">
+                <h3 class="section-title"><i class="fas fa-tint"></i> 7. FLUIDOS E VAZAMENTOS</h3>
+                <h4 class="subsection-title mb-2">COR DA MANCHA NO CHÃO</h4>
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <label class="sintoma-card"><input type="checkbox" class="fluido hidden" value="Mancha Preta (Óleo)"><div class="card-content">Preta/Marrom</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="fluido hidden" value="Mancha Vermelha (Hidráulico)"><div class="card-content">Vermelha/Rosada</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="fluido hidden" value="Mancha Verde/Rosa (Água)"><div class="card-content">Verde/Rosa/Água</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="fluido hidden" value="Mancha Transparente (Freio)"><div class="card-content">Transparente</div></label>
+                </div>
+                <h4 class="subsection-title mb-2">NÍVEL</h4>
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="sintoma-card"><input type="checkbox" class="fluido hidden" value="Nível de Óleo Baixo"><div class="card-content">Óleo Baixou</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="fluido hidden" value="Nível de Água Baixo"><div class="card-content">Água Baixou</div></label>
+                </div>
+            </div>
+
+            <div class="luna-card mb-8">
+                <h3 class="section-title"><i class="fas fa-cogs"></i> 8. TRANSMISSÃO E EMBREAGEM</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <label class="sintoma-card"><input type="checkbox" class="transmissao hidden" value="Marcha arranha"><div class="card-content">Dificuldade engatar (Arranha)</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="transmissao hidden" value="Pedal Embreagem Duro"><div class="card-content">Pedal Duro/Alto</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="transmissao hidden" value="Embreagem Patinando"><div class="card-content">Embreagem Patinando</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="transmissao hidden" value="Tranco no Automático"><div class="card-content">Tranco no Automático</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="transmissao hidden" value="Delay no Automático"><div class="card-content">Demora responder (Auto)</div></label>
+                </div>
+            </div>
+
+            <div class="luna-card mb-8">
+                <h3 class="section-title"><i class="fas fa-bolt"></i> 9. SISTEMA ELÉTRICO</h3>
+                <label class="input-label">Idade da Bateria (Anos)</label>
+                <input type="number" id="idade-bateria" class="luna-input mb-4" placeholder="Ex: 2">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <label class="sintoma-card"><input type="checkbox" class="eletrica hidden" value="Partida Pesada"><div class="card-content">Partida Pesada (Lenta)</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="eletrica hidden" value="Apenas um Tec"><div class="card-content">Apenas um "Tec"</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="eletrica hidden" value="Vidro Lento"><div class="card-content">Vidro Lento/Falhando</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="eletrica hidden" value="Ar não gela"><div class="card-content">Ar parou de gelar</div></label>
+                    <label class="sintoma-card"><input type="checkbox" class="eletrica hidden" value="Som desliga sozinho"><div class="card-content">Som desliga sozinho</div></label>
+                </div>
+            </div>
+
+            <div class="luna-card mb-8">
+                <h3 class="section-title"><i class="fas fa-calendar-alt"></i> 10. FREQUÊNCIA (PERGUNTA DE OURO)</h3>
+                <div class="grid grid-cols-3 gap-2 bg-[#0f172a] p-1 rounded-lg border border-slate-700">
+                    <label class="freq-tab">
+                        <input type="radio" name="frequencia" value="Constante (100% das vezes)" class="hidden peer">
+                        <div class="tab-content peer-checked:bg-amber-500 peer-checked:text-slate-900">Constante</div>
+                    </label>
+                    <label class="freq-tab">
+                        <input type="radio" name="frequencia" value="Intermitente (Vai e volta)" class="hidden peer" checked>
+                        <div class="tab-content peer-checked:bg-amber-500 peer-checked:text-slate-900">Intermitente</div>
+                    </label>
+                    <label class="freq-tab">
+                        <input type="radio" name="frequencia" value="Evento Único" class="hidden peer">
+                        <div class="tab-content peer-checked:bg-amber-500 peer-checked:text-slate-900">Evento Único</div>
+                    </label>
+                </div>
             </div>
 
             <div class="luna-card mb-10">
-                <h3 class="section-title"><i class="fas fa-info-circle"></i> CONTEXTO (GATILHOS)</h3>
-                
-                <div class="mb-6">
-                    <label class="input-label mb-2 block">FREQUÊNCIA</label>
-                    <div class="grid grid-cols-3 gap-2 bg-[#0f172a] p-1 rounded-lg border border-slate-700">
-                        <label class="freq-tab">
-                            <input type="radio" name="frequencia" value="Sempre" class="hidden peer">
-                            <div class="tab-content peer-checked:bg-amber-500 peer-checked:text-slate-900">Sempre</div>
-                        </label>
-                        <label class="freq-tab">
-                            <input type="radio" name="frequencia" value="Às Vezes" class="hidden peer" checked>
-                            <div class="tab-content peer-checked:bg-amber-500 peer-checked:text-slate-900">Às Vezes</div>
-                        </label>
-                        <label class="freq-tab">
-                            <input type="radio" name="frequencia" value="Uma vez" class="hidden peer">
-                            <div class="tab-content peer-checked:bg-amber-500 peer-checked:text-slate-900">Uma vez</div>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="mb-6">
-                    <label class="input-label mb-2 block">CONDIÇÃO</label>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
-                        <label class="sintoma-card"><input type="checkbox" class="condicao hidden" value="Motor Frio"><div class="card-content"><i class="fas fa-snowflake"></i> Motor Frio</div></label>
-                        <label class="sintoma-card"><input type="checkbox" class="condicao hidden" value="Motor Quente"><div class="card-content"><i class="fas fa-fire"></i> Motor Quente</div></label>
-                        <label class="sintoma-card"><input type="checkbox" class="condicao hidden" value="Alta Velocidade"><div class="card-content"><i class="fas fa-tachometer-alt"></i> Alta Velocidade</div></label>
-                        <label class="sintoma-card"><input type="checkbox" class="condicao hidden" value="Ao Frear"><div class="card-content"><i class="fas fa-shoe-prints"></i> Ao Frear</div></label>
-                        <label class="sintoma-card"><input type="checkbox" class="condicao hidden" value="Em Buracos"><div class="card-content"><i class="fas fa-road"></i> Em Buracos</div></label>
-                    </div>
-                    <input type="text" id="outra-condicao" class="luna-input" placeholder="Outra condição? (Ex: Ao virar o volante...)">
-                </div>
-
-                <div>
-                    <label class="input-label mb-2 block">HISTÓRICO RECENTE</label>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
-                        <label class="sintoma-card"><input type="checkbox" class="gatilho hidden" value="Lavagem"><div class="card-content"><i class="far fa-check-circle"></i> Lavagem</div></label>
-                        <label class="sintoma-card"><input type="checkbox" class="gatilho hidden" value="Abastecimento"><div class="card-content"><i class="far fa-check-circle"></i> Abastecimento</div></label>
-                        <label class="sintoma-card"><input type="checkbox" class="gatilho hidden" value="Bateria"><div class="card-content"><i class="far fa-check-circle"></i> Bateria</div></label>
-                        <label class="sintoma-card"><input type="checkbox" class="gatilho hidden" value="Enchente"><div class="card-content"><i class="far fa-check-circle"></i> Enchente</div></label>
-                    </div>
-                    <input type="text" id="outro-historico" class="luna-input" placeholder="Outro evento recente? (Ex: Troca de óleo, batida...)">
-                </div>
+                <h3 class="section-title"><i class="fas fa-edit"></i> RESUMO DESCRITIVO</h3>
+                <textarea id="relato" rows="4" class="luna-input w-full" placeholder="Descreva com suas palavras o que você sente, ouve ou vê..."></textarea>
             </div>
 
-            <button id="btn-analisar" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-900 font-extrabold text-xl py-5 rounded-2xl shadow-xl transition-transform transform active:scale-95 flex items-center justify-center gap-3">
+            <button id="btn-analisar" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-900 font-extrabold text-xl py-5 rounded-2xl shadow-xl transition-transform transform active:scale-95 flex items-center justify-center gap-3 mb-16">
                 <span>ANALISAR COM O SEU LUNA</span>
                 <i class="fas fa-wrench"></i>
             </button>
@@ -226,7 +298,6 @@
                     <button onclick="location.reload()" class="bg-slate-800 border border-slate-600 text-white px-6 py-3 rounded-lg hover:bg-slate-700 font-bold">Novo Diagnóstico</button>
                 </div>
             </div>
-
         </div>
     </section>
 
