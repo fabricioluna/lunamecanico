@@ -7,23 +7,14 @@ export const analyzeVehicle = async (data: DiagnosisFormData): Promise<string> =
   
   const prompt = `
     DADOS TÉCNICOS DO VEÍCULO:
-    - Veículo: ${data.vehicle.model} (${data.vehicle.year})
-    - KM: ${data.vehicle.km} km
-    - Motor: ${data.vehicle.engine} | Câmbio: ${data.vehicle.transmission} | Combustível: ${data.vehicle.fuel}
-    ${data.vehicle.plate ? `- Placa Identificada: ${data.vehicle.plate}` : ''}
-
-    RELATO DO CLIENTE:
-    "${data.report}"
-
-    SINTOMAS OBSERVADOS:
-    - Barulhos: ${data.symptoms.noises.join(', ') || 'Nenhum item da lista'} ${data.symptoms.othersNoises ? `| Outros informados: ${data.symptoms.othersNoises}` : ''}
-    - Sensações: ${data.symptoms.sensations.join(', ') || 'Nenhum item da lista'} ${data.symptoms.othersSensations ? `| Outros informados: ${data.symptoms.othersSensations}` : ''}
-    - Alertas no Painel: ${data.symptoms.dashboard.join(', ') || 'Nenhum item da lista'} ${data.symptoms.othersDashboard ? `| Outros informados: ${data.symptoms.othersDashboard}` : ''}
-
-    CONTEXTO DO DEFEITO:
-    - Frequência: ${data.context.frequency}
-    - Condição: ${data.context.condition} ${data.context.othersCondition ? `| Detalhe da condição: ${data.context.othersCondition}` : ''}
-    - Histórico Recente: ${data.context.history.join(', ') || 'Nenhum item da lista'} ${data.context.othersHistory ? `| Detalhes extras: ${data.context.othersHistory}` : ''}
+    - MODELO/MARCA: ${data.vehicle.model}
+    - ESPECIFICAÇÕES: Ano ${data.vehicle.year} | ${data.vehicle.km} KM | Motor ${data.vehicle.engine} | Câmbio ${data.vehicle.transmission} | Combustível ${data.vehicle.fuel}
+    
+    SINTOMATOLOGIA E RELATO:
+    - RELATO DO PROPRIETÁRIO: "${data.report}"
+    - SINAIS E SINTOMAS SELECIONADOS: ${[...data.symptoms.noises, ...data.symptoms.sensations, ...data.symptoms.dashboard].join(', ') || 'Nenhum sinal específico selecionado'}
+    - CONDIÇÕES DE OCORRÊNCIA: Condição de ${data.context.condition} | Frequência: ${data.context.frequency}
+    - EVENTOS RECENTES: ${data.context.history.join(', ') || 'Sem intervenções recentes informadas'}
   `;
 
   try {
@@ -31,23 +22,53 @@ export const analyzeVehicle = async (data: DiagnosisFormData): Promise<string> =
       model: "gemini-3-flash-preview",
       contents: prompt,
       config: {
-        systemInstruction: `Você é o Seu Luna, o mecânico mestre, experiente e simpático da Luna Autopeças. 
-        Sua missão é ajudar o cliente a entender o que está acontecendo com o carro dele de forma didática e técnica.
+        systemInstruction: `Você é o Seu Luna, um Mecânico Master com décadas de experiência e Consultor Técnico Sênior da Luna Autopeças. Sua tarefa é redigir um "Laudo de Diagnóstico Técnico Virtual" extremamente profissional, justificado e didático.
+
+        DIRETRIZES DE FORMATAÇÃO PARA IMPRESSÃO E LEITURA:
+        1. ORGANIZAÇÃO POR PARÁGRAFOS: Cada explicação técnica, justificativa ou observação deve estar em seu próprio parágrafo. Evite blocos de texto maciços. Use espaçamento entre parágrafos para clareza visual.
+        2. JUSTIFICATIVA TÉCNICA PROFUNDA: Não se limite a citar a peça. Explique a lógica de causa e efeito. Por que o sintoma X leva à suspeita da peça Y? Use termos técnicos explicados de forma didática.
+        3. TOM DE RELATÓRIO PERICIAL: Escreva de forma objetiva, autoritária e profissional. O texto deve parecer um laudo oficial de engenharia mecânica.
+
+        ESTRUTURA OBRIGATÓRIA DO LAUDO (Markdown):
         
-        REGRAS DE RESPOSTA (Sempre use Markdown):
-        1. 🛠️ **O que parece ser**: Identifique o provável defeito com um título direto.
-        2. 🧠 **Por que isso está acontecendo**: Explique a mecânica por trás do problema de forma que um leigo entenda, mas mantendo a autoridade de especialista.
-        3. 📋 **As 3 principais suspeitas**: Faça um ranking de 1 a 3 das peças ou sistemas que podem estar falhando.
-        4. 🔧 **Teste rápido para fazer na hora**: Sugira algo que o motorista possa conferir sem ferramentas complexas (ex: checar nível, ouvir tal lugar, etc).
+        # 📄 LAUDO DE INSPEÇÃO TÉCNICA VEICULAR
         
-        Mantenha o tom da Luna Autopeças: Amigável, honesto e profissional. Use emojis relacionados a ferramentas e carros.`,
-        temperature: 0.8,
+        ## 📋 1. ANÁLISE DOS SINTOMAS E CONTEXTO OPERACIONAL
+        (Mínimo de dois parágrafos justificando a correlação entre o relato do cliente e o comportamento esperado do sistema mecânico/eletrônico do veículo).
+
+        ## 📊 2. DIAGNÓSTICO DE CAUSAS PROVÁVEIS (TOP 3)
+        Apresente exatamente 3 opções. Cada uma deve seguir rigorosamente este formato:
+        
+        ### 🟥 OPÇÃO 01: [Componente] — [Probabilidade]%
+        **Explicação Didática:** (Um parágrafo explicando a função desta peça no veículo).
+        
+        **Justificativa Técnica:** (Pelo menos dois parágrafos explicando detalhadamente por que este componente é o principal suspeito, baseando-se nos sintomas e no histórico).
+        
+        **Impacto no Sistema:** (Um parágrafo sobre o que acontece se o defeito persistir).
+
+        ### 🟧 OPÇÃO 02: [Componente] — [Probabilidade]%
+        (Siga a mesma estrutura acima, com parágrafos bem definidos).
+
+        ### 🟨 OPÇÃO 03: [Componente] — [Probabilidade]%
+        (Siga a mesma estrutura acima).
+
+        ## 🔬 3. PARECER TÉCNICO E PROCEDIMENTOS DE VALIDAÇÃO
+        (Descreva em parágrafos os testes físicos e eletrônicos que o mecânico deve realizar para confirmar este laudo).
+
+        ## ⚠️ 4. CONCLUSÃO E RECOMENDAÇÃO FINAL
+        (Parágrafo de encerramento com a classificação de risco).
+        
+        (Encerre OBRIGATORIAMENTE com: "Este laudo é uma análise preliminar baseada em inteligência artificial. Recomendamos uma avaliação física imediata em uma oficina de sua confiança para a validação deste diagnóstico e execução dos serviços necessários.")`,
+        temperature: 0.2,
+        thinkingConfig: { 
+          thinkingBudget: 2048 
+        },
       },
     });
 
-    return response.text || "Puxa, parece que meu scanner deu erro. Vamos tentar analisar novamente?";
-  } catch (error) {
-    console.error("Erro na análise do Seu Luna:", error);
-    throw new Error("Tive um probleminha na oficina virtual. Pode tentar de novo em instantes?");
+    return response.text || "Sistema de diagnóstico temporariamente indisponível.";
+  } catch (error: any) {
+    console.error("Erro no Seu Luna:", error);
+    throw new Error("Erro ao processar o laudo técnico. Verifique sua conexão e tente novamente.");
   }
 };
