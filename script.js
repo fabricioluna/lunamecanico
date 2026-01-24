@@ -5,9 +5,6 @@ const API_KEY = 'COLE_SUA_CHAVE_AQUI';
 
 document.addEventListener('DOMContentLoaded', function() {
     
-    // ---------------------------------------------------
-    // 1. LÓGICA DE LOGIN
-    // ---------------------------------------------------
     const loginForm = document.getElementById('login-form');
     
     if (loginForm) {
@@ -44,27 +41,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ---------------------------------------------------
-    // 2. BOTÃO DE ANÁLISE
-    // ---------------------------------------------------
     const btnAnalisar = document.getElementById('btn-analisar');
     if (btnAnalisar) {
         btnAnalisar.addEventListener('click', analisarComIA);
     }
 });
-
-// Função para mostrar campo "Outra condição"
-function toggleOutraCondicao() {
-    const select = document.getElementById('condicao');
-    const input = document.getElementById('outra-condicao');
-    if (select.value === 'Outros') {
-        input.classList.remove('hidden');
-        input.focus();
-    } else {
-        input.classList.add('hidden');
-        input.value = ''; // Limpa se esconder
-    }
-}
 
 function logout() {
     location.reload();
@@ -88,9 +69,7 @@ async function analisarComIA() {
     const motor = document.getElementById('motor').value;
     const cambio = document.getElementById('cambio').value;
 
-    // --- COLETA DOS NOVOS CAMPOS (OUTROS) ---
-    
-    // Sintomas (Checkboxes + Texto Outros)
+    // --- SINTOMAS ---
     let sintomas = [];
     document.querySelectorAll('.sintoma:checked').forEach(el => sintomas.push(el.value));
     
@@ -103,7 +82,7 @@ async function analisarComIA() {
     const outroPainel = document.getElementById('outro-painel').value;
     if(outroPainel) sintomas.push(`Painel/Visual Extra: ${outroPainel}`);
 
-    // Contexto (Gatilhos + Histórico + Condição)
+    // --- CONTEXTO (GATILHOS + HISTÓRICO) ---
     let gatilhos = [];
     document.querySelectorAll('.gatilho:checked').forEach(el => gatilhos.push(el.value));
     
@@ -113,12 +92,12 @@ async function analisarComIA() {
     const frequenciaEl = document.querySelector('input[name="frequencia"]:checked');
     const frequencia = frequenciaEl ? frequenciaEl.value : "Não informado";
     
-    // Condição (Select ou Input)
-    let condicao = document.getElementById('condicao').value;
+    // --- CONDIÇÃO (AGORA CHECKBOXES) ---
+    let condicoes = [];
+    document.querySelectorAll('.condicao:checked').forEach(el => condicoes.push(el.value));
+    
     const outraCondicao = document.getElementById('outra-condicao').value;
-    if (condicao === 'Outros' && outraCondicao) {
-        condicao = `Específica: ${outraCondicao}`;
-    }
+    if(outraCondicao) condicoes.push(`Outra Condição: ${outraCondicao}`);
 
     // Validação
     if (!modelo || !relato) {
@@ -147,7 +126,7 @@ async function analisarComIA() {
     
     CONTEXTO:
     - Frequência: ${frequencia}
-    - Condição de Ocorrência: ${condicao}
+    - Condição de Ocorrência: ${condicoes.join(', ') || 'Não informada'}
     - Histórico e Eventos Recentes: ${gatilhos.join(', ') || 'Nada relevante'}
 
     INSTRUÇÃO:
