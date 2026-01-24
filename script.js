@@ -5,9 +5,8 @@ const API_KEY = 'COLE_SUA_CHAVE_AQUI';
 
 document.addEventListener('DOMContentLoaded', function() {
     
-    // LOGIN
+    // LÓGICA DE LOGIN
     const loginForm = document.getElementById('login-form');
-    
     if (loginForm) {
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -61,81 +60,93 @@ async function analisarComIA() {
     const resultadoContainer = document.getElementById('resultado-container');
     const resultadoTexto = document.getElementById('resultado-texto');
 
-    // DADOS TÉCNICOS (Sem Placa)
+    // 1. IDENTIFICAÇÃO
     const modelo = document.getElementById('modelo').value;
-    const relato = document.getElementById('relato').value;
-    // const placa = removido
     const ano = document.getElementById('ano').value;
     const km = document.getElementById('km').value;
     const motor = document.getElementById('motor').value;
     const cambio = document.getElementById('cambio').value;
 
-    // SINTOMAS E OUTROS
-    let sintomas = [];
-    document.querySelectorAll('.sintoma:checked').forEach(el => sintomas.push(el.value));
-    
-    const outroBarulho = document.getElementById('outro-barulho').value;
-    if(outroBarulho) sintomas.push(`Outro Barulho: ${outroBarulho}`);
+    // Helper para pegar checkboxes
+    const getCheckedValues = (className) => {
+        let values = [];
+        document.querySelectorAll(`.${className}:checked`).forEach(el => values.push(el.value));
+        return values;
+    };
 
-    const outraSensacao = document.getElementById('outra-sensacao').value;
-    if(outraSensacao) sintomas.push(`Outra Sensação: ${outraSensacao}`);
+    // 2. SINTOMAS
+    const sintomas = getCheckedValues('sintoma');
+    const outraLuz = document.getElementById('outra-luz').value;
+    if(outraLuz) sintomas.push(`Outra Luz: ${outraLuz}`);
 
-    const outroPainel = document.getElementById('outro-painel').value;
-    if(outroPainel) sintomas.push(`Painel/Visual Extra: ${outroPainel}`);
+    // 3. RUÍDOS
+    const ruidos = getCheckedValues('ruido');
 
-    // CONTEXTO
-    let gatilhos = [];
-    document.querySelectorAll('.gatilho:checked').forEach(el => gatilhos.push(el.value));
-    
-    const outroHistorico = document.getElementById('outro-historico').value;
-    if(outroHistorico) gatilhos.push(`Outro Histórico: ${outroHistorico}`);
+    // 4. CONDIÇÕES
+    const condicoes = getCheckedValues('condicao');
 
+    // 5. HISTÓRICO
+    const historico = getCheckedValues('historico');
+    const manutencao = document.getElementById('manutencao-recente').value;
+    if(manutencao) historico.push(`Manutenção recente: ${manutencao}`);
+
+    // 6. CHEIROS
+    const cheiros = getCheckedValues('cheiro');
+
+    // 7. FLUIDOS
+    const fluidos = getCheckedValues('fluido');
+
+    // 8. TRANSMISSÃO
+    const transmissao = getCheckedValues('transmissao');
+
+    // 9. ELÉTRICA
+    const eletrica = getCheckedValues('eletrica');
+    const idadeBateria = document.getElementById('idade-bateria').value;
+
+    // 10. FREQUÊNCIA
     const frequenciaEl = document.querySelector('input[name="frequencia"]:checked');
     const frequencia = frequenciaEl ? frequenciaEl.value : "Não informado";
-    
-    let condicoes = [];
-    document.querySelectorAll('.condicao:checked').forEach(el => condicoes.push(el.value));
-    
-    const outraCondicao = document.getElementById('outra-condicao').value;
-    if(outraCondicao) condicoes.push(`Outra Condição: ${outraCondicao}`);
+
+    // RESUMO
+    const relato = document.getElementById('relato').value;
 
     // Validação
-    if (!modelo || !relato) {
-        alert("Opa! O Seu Luna precisa saber pelo menos o Modelo do carro e o Relato do problema.");
+    if (!modelo) {
+        alert("Por favor, preencha pelo menos o Modelo do veículo.");
         return;
     }
 
     // UI Loading
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-cog fa-spin"></i> O SEU LUNA ESTÁ PENSANDO...';
+    btn.innerHTML = '<i class="fas fa-cog fa-spin"></i> O SEU LUNA ESTÁ DIAGNOSTICANDO...';
     btn.classList.add('opacity-75', 'cursor-not-allowed');
 
-    // Prompt Ajustado (Focado no Veículo)
+    // Prompt Detalhado
     const prompt = `
-    Atue como o SEU LUNA, um mecânico experiente e simpático.
+    Atue como o SEU LUNA, mecânico especialista da Luna Autopeças.
+    Analise este Formulário de Diagnóstico Inicial completo:
+
+    1. VEÍCULO: ${modelo} | Ano: ${ano} | KM: ${km} | Motor: ${motor} | Câmbio: ${cambio}
     
-    FICHA TÉCNICA DO VEÍCULO:
-    - Veículo: ${modelo}
-    - Especificações: Ano ${ano}, KM ${km}, Motor ${motor}, Câmbio ${cambio}
+    2. SINTOMAS PRINCIPAIS: ${sintomas.join(', ') || 'Nada marcado'}
+    3. RUÍDOS: ${ruidos.join(', ') || 'Nenhum'}
+    4. CONDIÇÕES: ${condicoes.join(', ') || 'Nenhuma específica'}
+    5. HISTÓRICO: ${historico.join(', ') || 'Nada relevante'}
+    6. CHEIROS: ${cheiros.join(', ') || 'Nenhum'}
+    7. FLUIDOS/VAZAMENTOS: ${fluidos.join(', ') || 'Nenhum'}
+    8. TRANSMISSÃO: ${transmissao.join(', ') || 'Ok'}
+    9. ELÉTRICA: ${eletrica.join(', ') || 'Ok'} (Bateria: ${idadeBateria} anos)
+    10. FREQUÊNCIA: ${frequencia}
     
-    RELATO DO PROBLEMA:
-    "${relato}"
-    
-    SINTOMAS OBSERVADOS:
-    - ${sintomas.join(', ') || 'Nenhum marcado'}
-    
-    CONTEXTO DE USO:
-    - Frequência: ${frequencia}
-    - Condições: ${condicoes.join(', ') || 'Não informada'}
-    - Histórico: ${gatilhos.join(', ') || 'Nada relevante'}
+    RESUMO DO CLIENTE: "${relato}"
 
     INSTRUÇÃO:
     Gere um diagnóstico técnico em Markdown.
     1. Saudação do Seu Luna.
-    2. Título do provável defeito.
-    3. Explicação simples do porquê.
-    4. Lista de 3 principais suspeitas.
-    5. Recomendação técnica.
+    2. DIAGNÓSTICO PRINCIPAL (Título do defeito mais provável).
+    3. ANÁLISE DETALHADA: Explique por que chegou a essa conclusão cruzando os sintomas (Ex: Cheiro de ovo podre + Luz injeção = Catalisador).
+    4. PROBABILIDADES: Liste as 3 causas mais prováveis em ordem.
+    5. RECOMENDAÇÃO: Qual teste fazer primeiro na oficina?
     `;
 
     try {
