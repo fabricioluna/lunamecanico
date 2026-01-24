@@ -1,106 +1,140 @@
-/* Configuração Geral */
+/* Fonte Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap');
+
 body {
-    background-color: #0f172a; /* Azul muito escuro (Slate 900) */
+    font-family: 'Inter', sans-serif;
+    background-color: #0f172a; /* Fundo geral bem escuro */
 }
 
-/* Animação suave entre telas */
 .fade-in {
-    animation: fadeIn 0.5s ease-in-out;
+    animation: fadeIn 0.6s ease-out;
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Estilo Personalizado dos Inputs (Igual ao mockup) */
+/* =========================================
+   COMPONENTES PERSONALIZADOS LUNA
+   ========================================= */
+
+/* Cards Principais (Container de seções) */
+.luna-card {
+    background-color: #1e293b; /* Azul levemente mais claro que o fundo */
+    border: 1px solid #334155;
+    border-radius: 1rem; /* 16px */
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Títulos das Seções (Laranja e Bold) */
+.section-title {
+    color: #f59e0b; /* Amber 500 */
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.875rem; /* 14px */
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-left: 4px solid #f59e0b;
+    padding-left: 0.75rem;
+}
+
+.subsection-title {
+    color: #94a3b8;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Inputs Personalizados (Fundo Azul Profundo) */
+.input-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
 .luna-input {
     width: 100%;
-    background-color: #111827; /* Quase preto */
+    background-color: #0f172a; /* Fundo muito escuro conforme print */
     border: 1px solid #334155;
     border-radius: 0.5rem;
-    padding: 0.75rem 1rem;
+    padding: 1rem;
     color: white;
+    font-size: 0.95rem;
     transition: all 0.2s;
     outline: none;
 }
 
 .luna-input:focus {
-    border-color: #f59e0b; /* Amarelo da Luna */
-    box-shadow: 0 0 0 1px #f59e0b;
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
 }
 
-/* Scrollbar personalizada */
-::-webkit-scrollbar {
-    width: 8px;
-}
-::-webkit-scrollbar-track {
-    background: #1e293b;
-}
-::-webkit-scrollbar-thumb {
-    background: #475569;
-    border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-    background: #f59e0b;
+.luna-input::placeholder {
+    color: #475569;
 }
 
-/* Checkboxes Personalizados */
-.check-container {
-    display: block;
-    position: relative;
-    padding-left: 30px;
-    margin-bottom: 12px;
+/* Checkboxes Estilo Card (Botões de Sintomas) */
+.sintoma-card {
     cursor: pointer;
-    font-size: 14px;
-    color: #cbd5e1;
     user-select: none;
 }
 
-.check-container input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-    height: 0;
-    width: 0;
+.card-content {
+    background-color: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
 }
 
-.checkmark {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 20px;
-    width: 20px;
-    background-color: #1e293b;
-    border: 1px solid #475569;
-    border-radius: 4px;
+.sintoma-card:hover .card-content {
+    border-color: #64748b;
 }
 
-.check-container:hover input ~ .checkmark {
-    background-color: #334155;
-}
-
-.check-container input:checked ~ .checkmark {
-    background-color: #f59e0b;
+/* Estado Selecionado do Card */
+.sintoma:checked + .card-content,
+.gatilho:checked + .card-content {
+    background-color: rgba(245, 158, 11, 0.1); /* Fundo ambar transparente */
     border-color: #f59e0b;
+    color: #f59e0b;
 }
 
-.checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
+/* Ícones dentro dos cards mudam quando selecionados */
+.sintoma:checked + .card-content i,
+.gatilho:checked + .card-content i {
+    font-weight: 900; /* Solid icon style */
 }
 
-.check-container input:checked ~ .checkmark:after {
-    display: block;
+/* Abas de Frequência */
+.freq-tab {
+    cursor: pointer;
 }
 
-.check-container .checkmark:after {
-    left: 7px;
-    top: 3px;
-    width: 5px;
-    height: 10px;
-    border: solid #0f172a;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
+.tab-content {
+    text-align: center;
+    padding: 0.5rem;
+    border-radius: 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #94a3b8;
+    transition: all 0.2s;
+}
+
+.freq-tab:hover .tab-content {
+    color: white;
 }
