@@ -3,7 +3,7 @@
 
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #0f172a; /* Fundo geral bem escuro */
+    background-color: #0f172a; /* Fundo geral */
 }
 
 .fade-in {
@@ -19,21 +19,21 @@ body {
    COMPONENTES PERSONALIZADOS LUNA
    ========================================= */
 
-/* Cards Principais (Container de seções) */
+/* Cards Principais */
 .luna-card {
-    background-color: #1e293b; /* Azul levemente mais claro que o fundo */
+    background-color: #1e293b;
     border: 1px solid #334155;
-    border-radius: 1rem; /* 16px */
+    border-radius: 1rem;
     padding: 1.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-/* Títulos das Seções (Laranja e Bold) */
+/* Títulos */
 .section-title {
     color: #f59e0b; /* Amber 500 */
     font-weight: 800;
     text-transform: uppercase;
-    font-size: 0.875rem; /* 14px */
+    font-size: 0.875rem;
     letter-spacing: 0.05em;
     margin-bottom: 1rem;
     display: flex;
@@ -49,9 +49,11 @@ body {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
 }
 
-/* Inputs Personalizados (Fundo Azul Profundo) */
+/* Inputs */
 .input-label {
     font-size: 0.7rem;
     font-weight: 700;
@@ -63,7 +65,7 @@ body {
 
 .luna-input {
     width: 100%;
-    background-color: #0f172a; /* Fundo muito escuro conforme print */
+    background-color: #0f172a;
     border: 1px solid #334155;
     border-radius: 0.5rem;
     padding: 1rem;
@@ -82,10 +84,14 @@ body {
     color: #475569;
 }
 
-/* Checkboxes Estilo Card (Botões de Sintomas) */
+/* =========================================
+   CHECKBOXES ESTILO CARD (BOTOES)
+   ========================================= */
 .sintoma-card {
     cursor: pointer;
     user-select: none;
+    display: block;
+    height: 100%;
 }
 
 .card-content {
@@ -100,24 +106,43 @@ body {
     align-items: center;
     gap: 0.5rem;
     transition: all 0.2s;
+    height: 100%; /* Garante altura igual no grid */
 }
 
 .sintoma-card:hover .card-content {
     border-color: #64748b;
 }
 
-/* Estado Selecionado do Card */
+/* -------------------------------------------------------
+   AQUI ESTÁ A CORREÇÃO:
+   Lista de todas as classes que devem acender quando marcadas
+   -------------------------------------------------------
+*/
 .sintoma:checked + .card-content,
+.ruido:checked + .card-content,
+.condicao:checked + .card-content,
+.historico:checked + .card-content,
+.cheiro:checked + .card-content,
+.fluido:checked + .card-content,
+.transmissao:checked + .card-content,
+.eletrica:checked + .card-content,
 .gatilho:checked + .card-content {
-    background-color: rgba(245, 158, 11, 0.1); /* Fundo ambar transparente */
-    border-color: #f59e0b;
-    color: #f59e0b;
+    background-color: rgba(245, 158, 11, 0.15); /* Fundo ambar leve */
+    border-color: #f59e0b; /* Borda laranja */
+    color: #f59e0b; /* Texto laranja */
+    box-shadow: 0 0 0 1px #f59e0b; /* Brilho extra na borda */
 }
 
-/* Ícones dentro dos cards mudam quando selecionados */
+/* Ícones dentro dos cards ficam sólidos quando selecionados */
 .sintoma:checked + .card-content i,
-.gatilho:checked + .card-content i {
-    font-weight: 900; /* Solid icon style */
+.ruido:checked + .card-content i,
+.condicao:checked + .card-content i,
+.historico:checked + .card-content i,
+.cheiro:checked + .card-content i,
+.fluido:checked + .card-content i,
+.transmissao:checked + .card-content i,
+.eletrica:checked + .card-content i {
+    font-weight: 900;
 }
 
 /* Abas de Frequência */
@@ -137,4 +162,19 @@ body {
 
 .freq-tab:hover .tab-content {
     color: white;
+}
+
+/* Scrollbar Personalizada */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #0f172a;
+}
+::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #f59e0b;
 }
