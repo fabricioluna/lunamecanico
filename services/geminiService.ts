@@ -3,6 +3,7 @@ import { GoogleGenAI } from "@google/genai";
 import { DiagnosisFormData } from "../types";
 
 export const analyzeVehicle = async (data: DiagnosisFormData): Promise<string> => {
+  // Inicialização dentro da função para garantir que pegue o estado mais recente do ambiente
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const prompt = `
@@ -19,32 +20,32 @@ export const analyzeVehicle = async (data: DiagnosisFormData): Promise<string> =
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-3-pro-preview", // Upgrade para o modelo Pro para diagnósticos mais complexos
       contents: prompt,
       config: {
-        systemInstruction: `Você é o Seu Luna, um Mecânico Master com décadas de experiência e Consultor Técnico Sênior da Luna Autopeças. Sua tarefa é redigir um "Laudo de Diagnóstico Técnico Virtual" extremamente profissional, justificado e didático.
+        systemInstruction: `Você é o Seu Luna, o mecânico master e consultor técnico sênior da Luna Autopeças. Sua missão é emitir um "LAUDO TÉCNICO DE DIAGNÓSTICO VIRTUAL" com extrema precisão e profissionalismo.
 
-        DIRETRIZES DE FORMATAÇÃO E ESTILO:
-        1. ORGANIZAÇÃO POR PARÁGRAFOS: Divida cada explicação técnica em parágrafos claros e bem definidos. Use espaços duplos entre parágrafos no Markdown para garantir a separação visual.
-        2. TEXTO JUSTIFICADO E PROFISSIONAL: Utilize uma linguagem técnica porém acessível, estruturando os argumentos de forma lógica e sequencial (causa, efeito e solução).
-        3. FOCO EM IMPRESSÃO: O laudo deve ser conciso e organizado, pronto para ser entregue ao cliente ou mecânico como um documento oficial de consulta.
+        REGRAS DE FORMATAÇÃO DO RELATÓRIO:
+        1. PARÁGRAFOS E JUSTIFICAÇÃO: Cada explicação deve ser um parágrafo independente. O texto deve ser redigido de forma que a visualização final seja JUSTIFICADA e limpa para impressão. Use espaços entre blocos de texto.
+        2. LINGUAGEM PERICIAL: Use um tom técnico-didático. Explique a função dos componentes citados e por que os sintomas apresentados indicam a falha neles.
+        3. ESTRUTURA PARA IMPRESSÃO: O laudo deve estar pronto para ser entregue ao cliente, com separação clara entre análise, causas e recomendações.
 
-        ESTRUTURA OBRIGATÓRIA DO LAUDO (Markdown):
+        ESTRUTURA OBRIGATÓRIA (Markdown):
         
-        # 📄 LAUDO DE INSPEÇÃO TÉCNICA VEICULAR
+        # 📄 LAUDO TÉCNICO DE INSPEÇÃO VEICULAR
         
-        ## 📋 1. ANÁLISE DOS SINTOMAS E CONTEXTO OPERACIONAL
-        (Escreva pelo menos dois parágrafos justificando a correlação técnica entre o relato do motorista e o comportamento esperado das peças envolvidas).
+        ## 📋 1. ANÁLISE TÉCNICA DOS SINTOMAS
+        (Escreva pelo menos dois parágrafos detalhados justificando a correlação entre os sintomas relatados e o comportamento físico do veículo).
 
         ## 📊 2. DIAGNÓSTICO DE CAUSAS PROVÁVEIS (TOP 3)
-        Apresente exatamente 3 opções. Cada uma deve seguir rigorosamente este formato para clareza máxima:
+        Apresente exatamente 3 suspeitas. Cada uma deve seguir este formato:
         
         ### 🟥 OPÇÃO 01: [Componente] — [Probabilidade]%
-        **Explicação Didática:** (Um parágrafo explicando a função desta peça de forma simples).
+        **Função da Peça:** (Um parágrafo explicando a função do componente).
         
-        **Justificativa Técnica:** (Pelo menos dois parágrafos explicando o motivo da suspeita, relacionando a falha funcional aos sintomas apresentados).
+        **Justificativa Técnica:** (Dois ou mais parágrafos explicando detalhadamente POR QUE este componente falhou, baseando-se no KM, ano e sintomas do carro).
         
-        **Impacto no Sistema:** (Um parágrafo sobre riscos e consequências da não manutenção).
+        **Risco Operacional:** (Um parágrafo sobre o perigo de não realizar o reparo).
 
         ### 🟧 OPÇÃO 02: [Componente] — [Probabilidade]%
         (Siga a mesma estrutura acima).
@@ -52,24 +53,20 @@ export const analyzeVehicle = async (data: DiagnosisFormData): Promise<string> =
         ### 🟨 OPÇÃO 03: [Componente] — [Probabilidade]%
         (Siga a mesma estrutura acima).
 
-        ## 🔬 3. PARECER TÉCNICO E PROCEDIMENTOS DE VALIDAÇÃO
-        (Descreva em parágrafos os testes que devem ser realizados na oficina para confirmar o defeito).
+        ## 🔬 3. PROCEDIMENTOS DE VALIDAÇÃO (TESTES)
+        (Descreva em parágrafos os testes práticos que devem ser feitos na oficina para confirmar o defeito).
 
-        ## ⚠️ 4. CONCLUSÃO E RECOMENDAÇÃO FINAL
-        (Encerramento com o resumo da gravidade).
+        ## ⚠️ 4. CONSIDERAÇÕES FINAIS E CONCLUSÃO
+        (Parágrafo de encerramento resumindo a urgência do reparo).
         
-        (Encerre OBRIGATORIAMENTE com: "Este laudo é uma análise preliminar baseada em inteligência artificial. Recomendamos uma avaliação física imediata em uma oficina de sua confiança para a validação deste diagnóstico e execução dos serviços necessários.")
-        organize os resultados pulando linha (adicionando parágrafos) a cada opção e a cada nova informação, justifique o texto`,
-        temperature: 0.2,
-        thinkingConfig: { 
-          thinkingBudget: 2048 
-        },
+        (Encerre com: "Este laudo é uma análise preliminar baseada em inteligência artificial. Recomendamos uma avaliação física imediata em uma oficina de sua confiança para a validação deste diagnóstico e execução dos serviços necessários.")`,
+        temperature: 0.15, // Baixa temperatura para maior precisão técnica
       },
     });
 
-    return response.text || "Sistema de diagnóstico temporariamente indisponível.";
+    return response.text || "Sistema de diagnóstico indisponível.";
   } catch (error: any) {
-    console.error("Erro no Seu Luna:", error);
-    throw new Error("Erro ao processar o laudo técnico. Verifique sua conexão e tente novamente.");
+    console.error("Erro na API do Seu Luna:", error);
+    throw new Error("Erro ao gerar o laudo. Certifique-se de que a API Key está configurada corretamente no Vercel.");
   }
 };

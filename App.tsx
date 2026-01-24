@@ -122,11 +122,13 @@ const App: React.FC = () => {
             )}
 
             {diagnosis && !isAnalyzing && (
-              <div className="bg-slate-800 p-8 md:p-16 rounded-[3rem] border-t-8 border-[#F59E0B] shadow-2xl amber-glow animate-in fade-in zoom-in duration-500 overflow-hidden relative print:bg-white print:text-slate-900 print:border-slate-300 print:p-8 print:shadow-none print:amber-glow-none print:rounded-none print:border-t-0">
+              <div className="bg-slate-800 p-8 md:p-16 rounded-[3rem] border-t-8 border-[#F59E0B] shadow-2xl amber-glow animate-in fade-in zoom-in duration-500 overflow-hidden relative print:bg-white print:text-slate-900 print:border-slate-300 print:p-10 print:shadow-none print:amber-glow-none print:rounded-none print:border-t-0">
+                {/* Ícone de fundo para o laudo */}
                 <div className="absolute top-10 right-10 opacity-[0.03] pointer-events-none print:hidden">
                   <Wrench size={400} />
                 </div>
 
+                {/* Cabeçalho do Laudo */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-12 pb-8 border-b border-slate-700/50 relative z-10 print:border-slate-300">
                   <div className="flex items-center gap-5">
                     <div className="bg-[#F59E0B] p-4 rounded-[1.5rem] shadow-xl shadow-amber-500/20 print:bg-slate-100 print:shadow-none">
@@ -145,7 +147,12 @@ const App: React.FC = () => {
                   </div>
                 </div>
                 
+                {/* Conteúdo do Diagnóstico Justificado */}
                 <div className="prose prose-invert prose-amber max-w-none relative z-10
+                  [&_p]:text-justify
+                  [&_p]:mb-8
+                  [&_p]:leading-relaxed
+                  [&_p]:text-base
                   print:prose-slate
                   prose-headings:text-[#F59E0B] 
                   prose-headings:font-black 
@@ -162,9 +169,6 @@ const App: React.FC = () => {
                   prose-h3:mt-8
                   prose-p:text-slate-300
                   prose-p:font-medium
-                  prose-p:text-justify
-                  prose-p:leading-relaxed
-                  prose-p:mb-8
                   prose-strong:text-[#F59E0B]
                   prose-li:text-slate-300
                   prose-li:marker:text-[#F59E0B]
@@ -181,11 +185,12 @@ const App: React.FC = () => {
                   <ReactMarkdown>{diagnosis}</ReactMarkdown>
                 </div>
                 
+                {/* Rodapé do Laudo */}
                 <div className="mt-16 pt-10 border-t border-slate-700/50 flex flex-col md:flex-row items-center justify-between gap-6 relative z-10 print:border-slate-300">
                   <div className="flex flex-col gap-1">
                     <span className="text-[#F59E0B] font-black text-sm uppercase tracking-widest print:text-slate-900">Responsabilidade Técnica</span>
                     <p className="text-slate-500 text-[11px] font-bold max-w-md uppercase leading-tight print:text-slate-600">
-                      Este laudo é uma análise consultiva gerada por IA. Para sua total segurança, recomendamos a validação física imediata em uma oficina de sua confiança.
+                      Este laudo é uma análise consultiva gerada por inteligência artificial avançada. Para segurança operacional, a validação física por um mecânico presencial é indispensável.
                     </p>
                   </div>
                   <div className="flex gap-3 w-full md:w-auto print:hidden">
@@ -193,13 +198,13 @@ const App: React.FC = () => {
                       onClick={() => window.print()}
                       className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-600 text-[#F59E0B] px-8 py-4 rounded-2xl text-sm font-black transition-all border-2 border-slate-600 shadow-lg"
                     >
-                      <Printer size={18} /> Imprimir
+                      <Printer size={18} /> Imprimir Laudo
                     </button>
                     <button 
                       onClick={() => window.location.reload()}
                       className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-[#F59E0B] hover:bg-amber-400 text-slate-900 px-8 py-4 rounded-2xl text-sm font-black transition-all shadow-lg uppercase"
                     >
-                      <RotateCcw size={18} /> Nova Consulta
+                      <RotateCcw size={18} /> Novo Diagnóstico
                     </button>
                   </div>
                 </div>
@@ -217,7 +222,7 @@ const App: React.FC = () => {
               Luna Autopeças e Serviços Automotivos
             </p>
             <p className="text-slate-600 text-xs font-bold uppercase tracking-wider">
-              Sistema de Diagnóstico Seu Luna • Versão 1.2
+              Powered by Seu Luna v2.0 • Consultoria Inteligente
             </p>
           </div>
         </div>
