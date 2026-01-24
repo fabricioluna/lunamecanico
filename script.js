@@ -1,7 +1,6 @@
 // =======================================================
 // 🔑 CONFIGURAÇÃO
 // =======================================================
-// Substitua pela sua chave real do Google AI Studio
 const API_KEY = 'COLE_SUA_CHAVE_AQUI'; 
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -14,7 +13,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (loginForm) {
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            
             const passwordInput = document.getElementById('password-input');
             const errorMsg = document.getElementById('login-error');
             const loginScreen = document.getElementById('login-screen');
@@ -23,29 +21,21 @@ document.addEventListener('DOMContentLoaded', function() {
             const senhaDigitada = passwordInput.value.trim();
 
             if (senhaDigitada === 'luna1989') {
-                // Login Sucesso
                 errorMsg.classList.add('hidden');
-                
-                // Animação Fade Out
                 loginScreen.style.opacity = '0';
                 loginScreen.style.transition = 'opacity 0.5s ease';
-                
                 setTimeout(() => {
                     loginScreen.style.display = 'none';
                     appScreen.classList.remove('hidden');
-                    // Reset scroll
                     window.scrollTo(0,0);
                 }, 500);
-
             } else {
-                // Erro
                 errorMsg.classList.remove('hidden');
                 passwordInput.classList.add('border-red-500');
                 passwordInput.classList.remove('border-amber-500/30');
             }
         });
-
-        // Limpar erro ao digitar
+        
         const passInput = document.getElementById('password-input');
         passInput.addEventListener('input', function() {
             this.classList.remove('border-red-500');
@@ -55,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ---------------------------------------------------
-    // 2. BOTÃO DE ANÁLISE (IA)
+    // 2. BOTÃO DE ANÁLISE
     // ---------------------------------------------------
     const btnAnalisar = document.getElementById('btn-analisar');
     if (btnAnalisar) {
@@ -63,7 +53,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Função Logout
+// Função para mostrar campo "Outra condição"
+function toggleOutraCondicao() {
+    const select = document.getElementById('condicao');
+    const input = document.getElementById('outra-condicao');
+    if (select.value === 'Outros') {
+        input.classList.remove('hidden');
+        input.focus();
+    } else {
+        input.classList.add('hidden');
+        input.value = ''; // Limpa se esconder
+    }
+}
+
 function logout() {
     location.reload();
 }
@@ -77,7 +79,7 @@ async function analisarComIA() {
     const resultadoContainer = document.getElementById('resultado-container');
     const resultadoTexto = document.getElementById('resultado-texto');
 
-    // Coleta de Dados
+    // Coleta Básica
     const modelo = document.getElementById('modelo').value;
     const relato = document.getElementById('relato').value;
     const placa = document.getElementById('placa').value;
@@ -86,18 +88,37 @@ async function analisarComIA() {
     const motor = document.getElementById('motor').value;
     const cambio = document.getElementById('cambio').value;
 
-    // Checkboxes (Sintomas e Gatilhos)
+    // --- COLETA DOS NOVOS CAMPOS (OUTROS) ---
+    
+    // Sintomas (Checkboxes + Texto Outros)
     let sintomas = [];
     document.querySelectorAll('.sintoma:checked').forEach(el => sintomas.push(el.value));
     
+    const outroBarulho = document.getElementById('outro-barulho').value;
+    if(outroBarulho) sintomas.push(`Outro Barulho: ${outroBarulho}`);
+
+    const outraSensacao = document.getElementById('outra-sensacao').value;
+    if(outraSensacao) sintomas.push(`Outra Sensação: ${outraSensacao}`);
+
+    const outroPainel = document.getElementById('outro-painel').value;
+    if(outroPainel) sintomas.push(`Painel/Visual Extra: ${outroPainel}`);
+
+    // Contexto (Gatilhos + Histórico + Condição)
     let gatilhos = [];
     document.querySelectorAll('.gatilho:checked').forEach(el => gatilhos.push(el.value));
     
-    // Radio Button (Frequência)
+    const outroHistorico = document.getElementById('outro-historico').value;
+    if(outroHistorico) gatilhos.push(`Outro Histórico: ${outroHistorico}`);
+
     const frequenciaEl = document.querySelector('input[name="frequencia"]:checked');
     const frequencia = frequenciaEl ? frequenciaEl.value : "Não informado";
     
-    const condicao = document.getElementById('condicao').value;
+    // Condição (Select ou Input)
+    let condicao = document.getElementById('condicao').value;
+    const outraCondicao = document.getElementById('outra-condicao').value;
+    if (condicao === 'Outros' && outraCondicao) {
+        condicao = `Específica: ${outraCondicao}`;
+    }
 
     // Validação
     if (!modelo || !relato) {
@@ -118,17 +139,20 @@ async function analisarComIA() {
     - Veículo: ${modelo} ${placa ? `(${placa})` : ''}
     - Detalhes: Ano ${ano}, KM ${km}, Motor ${motor}, Câmbio ${cambio}
     
-    QUEIXA:
+    QUEIXA PRINCIPAL:
     "${relato}"
     
-    OBSERVAÇÕES TÉCNICAS:
-    - Sintomas marcados: ${sintomas.join(', ') || 'Nenhum'}
-    - Contexto: Acontece ${frequencia}. Condição: ${condicao}.
-    - Histórico recente: ${gatilhos.join(', ') || 'Nada relevante'}
+    OBSERVAÇÕES TÉCNICAS E SINTOMAS:
+    - Lista de Sintomas: ${sintomas.join(', ') || 'Nenhum marcado'}
+    
+    CONTEXTO:
+    - Frequência: ${frequencia}
+    - Condição de Ocorrência: ${condicao}
+    - Histórico e Eventos Recentes: ${gatilhos.join(', ') || 'Nada relevante'}
 
     INSTRUÇÃO:
     Gere um diagnóstico técnico em Markdown.
-    1. Saudação do Seu Luna (use emojis).
+    1. Saudação do Seu Luna.
     2. Título do provável defeito.
     3. Explicação simples do porquê (Causalidade).
     4. Lista de 3 principais suspeitas (Ranking).
@@ -152,11 +176,9 @@ async function analisarComIA() {
 
         const textResponse = data.candidates[0].content.parts[0].text;
 
-        // Renderizar
         resultadoTexto.innerHTML = marked.parse(textResponse);
         resultadoContainer.classList.remove('hidden');
         
-        // Scroll
         setTimeout(() => {
             resultadoContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 100);
