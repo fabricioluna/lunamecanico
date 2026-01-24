@@ -60,13 +60,6 @@ async function analisarComIA() {
     const resultadoContainer = document.getElementById('resultado-container');
     const resultadoTexto = document.getElementById('resultado-texto');
 
-    // 1. IDENTIFICAÇÃO
-    const modelo = document.getElementById('modelo').value;
-    const ano = document.getElementById('ano').value;
-    const km = document.getElementById('km').value;
-    const motor = document.getElementById('motor').value;
-    const cambio = document.getElementById('cambio').value;
-
     // Helper para pegar checkboxes
     const getCheckedValues = (className) => {
         let values = [];
@@ -74,34 +67,62 @@ async function analisarComIA() {
         return values;
     };
 
+    // 1. IDENTIFICAÇÃO
+    const modelo = document.getElementById('modelo').value;
+    const ano = document.getElementById('ano').value;
+    const km = document.getElementById('km').value;
+    const motor = document.getElementById('motor').value;
+    const cambio = document.getElementById('cambio').value;
+
     // 2. SINTOMAS
-    const sintomas = getCheckedValues('sintoma');
+    let sintomas = getCheckedValues('sintoma');
     const outraLuz = document.getElementById('outra-luz').value;
     if(outraLuz) sintomas.push(`Outra Luz: ${outraLuz}`);
+    
+    const outroMotor = document.getElementById('outro-motor').value;
+    if(outroMotor) sintomas.push(`Outro Motor: ${outroMotor}`);
+
+    const outraDirecao = document.getElementById('outra-direcao').value;
+    if(outraDirecao) sintomas.push(`Outra Direção: ${outraDirecao}`);
+
+    const outroFreio = document.getElementById('outro-freio').value;
+    if(outroFreio) sintomas.push(`Outro Freio: ${outroFreio}`);
 
     // 3. RUÍDOS
-    const ruidos = getCheckedValues('ruido');
+    let ruidos = getCheckedValues('ruido');
+    const outroRuido = document.getElementById('outro-ruido').value;
+    if(outroRuido) ruidos.push(`Outro Ruído/Local: ${outroRuido}`);
 
     // 4. CONDIÇÕES
-    const condicoes = getCheckedValues('condicao');
+    let condicoes = getCheckedValues('condicao');
+    const outraCondicao = document.getElementById('outra-condicao').value;
+    if(outraCondicao) condicoes.push(`Outra Condição: ${outraCondicao}`);
 
     // 5. HISTÓRICO
-    const historico = getCheckedValues('historico');
-    const manutencao = document.getElementById('manutencao-recente').value;
-    if(manutencao) historico.push(`Manutenção recente: ${manutencao}`);
+    let historico = getCheckedValues('historico');
+    const outroHistorico = document.getElementById('outro-historico').value;
+    if(outroHistorico) historico.push(`Outro Histórico: ${outroHistorico}`);
 
     // 6. CHEIROS
-    const cheiros = getCheckedValues('cheiro');
+    let cheiros = getCheckedValues('cheiro');
+    const outroCheiro = document.getElementById('outro-cheiro').value;
+    if(outroCheiro) cheiros.push(`Outro Cheiro: ${outroCheiro}`);
 
     // 7. FLUIDOS
-    const fluidos = getCheckedValues('fluido');
+    let fluidos = getCheckedValues('fluido');
+    const outroFluido = document.getElementById('outro-fluido').value;
+    if(outroFluido) fluidos.push(`Outro Fluido/Vazamento: ${outroFluido}`);
 
     // 8. TRANSMISSÃO
-    const transmissao = getCheckedValues('transmissao');
+    let transmissao = getCheckedValues('transmissao');
+    const outraTransmissao = document.getElementById('outra-transmissao').value;
+    if(outraTransmissao) transmissao.push(`Outra Transmissão: ${outraTransmissao}`);
 
     // 9. ELÉTRICA
-    const eletrica = getCheckedValues('eletrica');
+    let eletrica = getCheckedValues('eletrica');
     const idadeBateria = document.getElementById('idade-bateria').value;
+    const outraEletrica = document.getElementById('outra-eletrica').value;
+    if(outraEletrica) eletrica.push(`Outra Elétrica: ${outraEletrica}`);
 
     // 10. FREQUÊNCIA
     const frequenciaEl = document.querySelector('input[name="frequencia"]:checked');
@@ -121,19 +142,19 @@ async function analisarComIA() {
     btn.innerHTML = '<i class="fas fa-cog fa-spin"></i> O SEU LUNA ESTÁ DIAGNOSTICANDO...';
     btn.classList.add('opacity-75', 'cursor-not-allowed');
 
-    // Prompt Detalhado
+    // Prompt Rico para a IA
     const prompt = `
     Atue como o SEU LUNA, mecânico especialista da Luna Autopeças.
-    Analise este Formulário de Diagnóstico Inicial completo:
+    Analise este Formulário de Diagnóstico Detalhado:
 
     1. VEÍCULO: ${modelo} | Ano: ${ano} | KM: ${km} | Motor: ${motor} | Câmbio: ${cambio}
     
-    2. SINTOMAS PRINCIPAIS: ${sintomas.join(', ') || 'Nada marcado'}
+    2. SINTOMAS GERAIS: ${sintomas.join(', ') || 'Nenhum marcado'}
     3. RUÍDOS: ${ruidos.join(', ') || 'Nenhum'}
     4. CONDIÇÕES: ${condicoes.join(', ') || 'Nenhuma específica'}
     5. HISTÓRICO: ${historico.join(', ') || 'Nada relevante'}
     6. CHEIROS: ${cheiros.join(', ') || 'Nenhum'}
-    7. FLUIDOS/VAZAMENTOS: ${fluidos.join(', ') || 'Nenhum'}
+    7. FLUIDOS: ${fluidos.join(', ') || 'Nenhum'}
     8. TRANSMISSÃO: ${transmissao.join(', ') || 'Ok'}
     9. ELÉTRICA: ${eletrica.join(', ') || 'Ok'} (Bateria: ${idadeBateria} anos)
     10. FREQUÊNCIA: ${frequencia}
@@ -144,8 +165,8 @@ async function analisarComIA() {
     Gere um diagnóstico técnico em Markdown.
     1. Saudação do Seu Luna.
     2. DIAGNÓSTICO PRINCIPAL (Título do defeito mais provável).
-    3. ANÁLISE DETALHADA: Explique por que chegou a essa conclusão cruzando os sintomas (Ex: Cheiro de ovo podre + Luz injeção = Catalisador).
-    4. PROBABILIDADES: Liste as 3 causas mais prováveis em ordem.
+    3. ANÁLISE DETALHADA: Explique o raciocínio cruzando os dados (Ex: "O cheiro de X combinado com o barulho Y indica Z").
+    4. PROBABILIDADES: Liste as 3 causas mais prováveis.
     5. RECOMENDAÇÃO: Qual teste fazer primeiro na oficina?
     `;
 
