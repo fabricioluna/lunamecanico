@@ -5,6 +5,7 @@ const API_KEY = 'COLE_SUA_CHAVE_AQUI';
 
 document.addEventListener('DOMContentLoaded', function() {
     
+    // LOGIN
     const loginForm = document.getElementById('login-form');
     
     if (loginForm) {
@@ -60,16 +61,16 @@ async function analisarComIA() {
     const resultadoContainer = document.getElementById('resultado-container');
     const resultadoTexto = document.getElementById('resultado-texto');
 
-    // Coleta Básica
+    // DADOS TÉCNICOS (Sem Placa)
     const modelo = document.getElementById('modelo').value;
     const relato = document.getElementById('relato').value;
-    const placa = document.getElementById('placa').value;
+    // const placa = removido
     const ano = document.getElementById('ano').value;
     const km = document.getElementById('km').value;
     const motor = document.getElementById('motor').value;
     const cambio = document.getElementById('cambio').value;
 
-    // --- SINTOMAS ---
+    // SINTOMAS E OUTROS
     let sintomas = [];
     document.querySelectorAll('.sintoma:checked').forEach(el => sintomas.push(el.value));
     
@@ -82,7 +83,7 @@ async function analisarComIA() {
     const outroPainel = document.getElementById('outro-painel').value;
     if(outroPainel) sintomas.push(`Painel/Visual Extra: ${outroPainel}`);
 
-    // --- CONTEXTO (GATILHOS + HISTÓRICO) ---
+    // CONTEXTO
     let gatilhos = [];
     document.querySelectorAll('.gatilho:checked').forEach(el => gatilhos.push(el.value));
     
@@ -92,7 +93,6 @@ async function analisarComIA() {
     const frequenciaEl = document.querySelector('input[name="frequencia"]:checked');
     const frequencia = frequenciaEl ? frequenciaEl.value : "Não informado";
     
-    // --- CONDIÇÃO (AGORA CHECKBOXES) ---
     let condicoes = [];
     document.querySelectorAll('.condicao:checked').forEach(el => condicoes.push(el.value));
     
@@ -110,32 +110,32 @@ async function analisarComIA() {
     btn.innerHTML = '<i class="fas fa-cog fa-spin"></i> O SEU LUNA ESTÁ PENSANDO...';
     btn.classList.add('opacity-75', 'cursor-not-allowed');
 
-    // Prompt
+    // Prompt Ajustado (Focado no Veículo)
     const prompt = `
-    Atue como o SEU LUNA, um mecânico experiente, simpático e honesto da Luna Autopeças.
+    Atue como o SEU LUNA, um mecânico experiente e simpático.
     
-    DADOS DO CLIENTE:
-    - Veículo: ${modelo} ${placa ? `(${placa})` : ''}
-    - Detalhes: Ano ${ano}, KM ${km}, Motor ${motor}, Câmbio ${cambio}
+    FICHA TÉCNICA DO VEÍCULO:
+    - Veículo: ${modelo}
+    - Especificações: Ano ${ano}, KM ${km}, Motor ${motor}, Câmbio ${cambio}
     
-    QUEIXA PRINCIPAL:
+    RELATO DO PROBLEMA:
     "${relato}"
     
-    OBSERVAÇÕES TÉCNICAS E SINTOMAS:
-    - Lista de Sintomas: ${sintomas.join(', ') || 'Nenhum marcado'}
+    SINTOMAS OBSERVADOS:
+    - ${sintomas.join(', ') || 'Nenhum marcado'}
     
-    CONTEXTO:
+    CONTEXTO DE USO:
     - Frequência: ${frequencia}
-    - Condição de Ocorrência: ${condicoes.join(', ') || 'Não informada'}
-    - Histórico e Eventos Recentes: ${gatilhos.join(', ') || 'Nada relevante'}
+    - Condições: ${condicoes.join(', ') || 'Não informada'}
+    - Histórico: ${gatilhos.join(', ') || 'Nada relevante'}
 
     INSTRUÇÃO:
     Gere um diagnóstico técnico em Markdown.
     1. Saudação do Seu Luna.
     2. Título do provável defeito.
-    3. Explicação simples do porquê (Causalidade).
-    4. Lista de 3 principais suspeitas (Ranking).
-    5. Recomendação de teste ou serviço na oficina.
+    3. Explicação simples do porquê.
+    4. Lista de 3 principais suspeitas.
+    5. Recomendação técnica.
     `;
 
     try {
