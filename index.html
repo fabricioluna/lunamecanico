@@ -189,16 +189,14 @@
 
                 <div class="mb-6">
                     <label class="input-label mb-2 block">CONDIÇÃO</label>
-                    <select id="condicao" class="luna-input mb-2" onchange="toggleOutraCondicao()">
-                        <option value="Não sei informar">Não sei informar</option>
-                        <option value="Motor Frio">Motor Frio</option>
-                        <option value="Motor Quente">Motor Quente</option>
-                        <option value="Alta Velocidade">Alta Velocidade</option>
-                        <option value="Ao Frear">Ao Frear</option>
-                        <option value="Em Buracos">Em Buracos</option>
-                        <option value="Outros">Outros (Descreva abaixo)</option>
-                    </select>
-                    <input type="text" id="outra-condicao" class="luna-input hidden animate-pulse" placeholder="Descreva quando o problema acontece...">
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
+                        <label class="sintoma-card"><input type="checkbox" class="condicao hidden" value="Motor Frio"><div class="card-content"><i class="fas fa-snowflake"></i> Motor Frio</div></label>
+                        <label class="sintoma-card"><input type="checkbox" class="condicao hidden" value="Motor Quente"><div class="card-content"><i class="fas fa-fire"></i> Motor Quente</div></label>
+                        <label class="sintoma-card"><input type="checkbox" class="condicao hidden" value="Alta Velocidade"><div class="card-content"><i class="fas fa-tachometer-alt"></i> Alta Velocidade</div></label>
+                        <label class="sintoma-card"><input type="checkbox" class="condicao hidden" value="Ao Frear"><div class="card-content"><i class="fas fa-shoe-prints"></i> Ao Frear</div></label>
+                        <label class="sintoma-card"><input type="checkbox" class="condicao hidden" value="Em Buracos"><div class="card-content"><i class="fas fa-road"></i> Em Buracos</div></label>
+                    </div>
+                    <input type="text" id="outra-condicao" class="luna-input" placeholder="Outra condição? (Ex: Ao virar o volante...)">
                 </div>
 
                 <div>
@@ -209,7 +207,7 @@
                         <label class="sintoma-card"><input type="checkbox" class="gatilho hidden" value="Bateria"><div class="card-content"><i class="far fa-check-circle"></i> Bateria</div></label>
                         <label class="sintoma-card"><input type="checkbox" class="gatilho hidden" value="Enchente"><div class="card-content"><i class="far fa-check-circle"></i> Enchente</div></label>
                     </div>
-                     <input type="text" id="outro-historico" class="luna-input" placeholder="Outro evento recente? (Ex: Troca de óleo, batida...)">
+                    <input type="text" id="outro-historico" class="luna-input" placeholder="Outro evento recente? (Ex: Troca de óleo, batida...)">
                 </div>
             </div>
 
