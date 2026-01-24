@@ -1,59 +1,50 @@
 
 import { GoogleGenAI } from "@google/genai";
-import { FormData } from "../types";
+import { AnamneseForm } from "../types";
 
-const SYSTEM_INSTRUCTION = `Você é o "Seu Luna", o Mecânico Virtual Sênior da Luna Autopeças e Serviços. 
-Sua especialidade é diagnóstico automotivo avançado.
-Instruções:
-1. Analise os dados do veículo, KM e sintomas para identificar falhas comuns do modelo.
-2. Use um tom profissional, experiente e confiável.
-3. Sua resposta deve ser em Markdown estruturado:
-   - # Título do Diagnóstico (Ex: Falha no Sistema de Arrefecimento)
-   - ## Causa Raiz Provável
-   - ## Hipóteses de Defeito (Mínimo 3, com probabilidade Alta, Média e Baixa)
-   - ## Recomendações Técnicas
-   - ## Checklist para o Mecânico (Passos para validação física)
-4. Sempre mencione que a peça correta está disponível na Luna Autopeças.`;
-
-export const generateDiagnosis = async (formData: FormData): Promise<string> => {
+// Always use process.env.API_KEY directly when initializing the client.
+export const analyzeWithAI = async (formData: AnamneseForm): Promise<string> => {
+  // Initialize the AI client directly inside the function for the latest API_KEY access
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const prompt = `
     DADOS DO VEÍCULO:
-    - Marca/Modelo: ${formData.veiculo.marcaModelo}
+    - Modelo/Versão: ${formData.veiculo.modelo}
     - Ano: ${formData.veiculo.ano}
     - KM: ${formData.veiculo.km}
-    - Motor: ${formData.veiculo.motorizacao}
+    - Motor: ${formData.veiculo.motor}
     - Câmbio: ${formData.veiculo.cambio}
     - Combustível: ${formData.veiculo.combustivel}
 
-    RELATO DO PROBLEMA:
+    RELATO DO CLIENTE:
     "${formData.relato}"
 
-    SINTOMAS:
-    - Barulhos: ${formData.sintomas.barulhos.join(", ") || "Nenhum específico"}
-    - Sensações: ${formData.sintomas.sensacoes.join(", ") || "Nenhuma específica"}
-    - Alertas: ${formData.sintomas.visual.join(", ") || "Nenhum alerta visual"}
+    SINTOMAS OBSERVADOS:
+    - Barulhos: ${formData.sintomas.barulhos.join(", ") || "Nenhum informado"}
+    - Sensações: ${formData.sintomas.sensacoes.join(", ") || "Nenhuma informada"}
+    - Painel/Visual: ${formData.sintomas.painel.join(", ") || "Nenhum informado"}
 
-    CONTEXTO:
+    CONTEXTO E GATILHOS:
     - Frequência: ${formData.contexto.frequencia}
-    - Condições: ${formData.contexto.condicoes.join(", ")}
-    - Histórico: ${formData.contexto.historico.join(", ")}
+    - Condição: ${formData.contexto.condicao.join(", ") || "Não especificado"}
+    - Histórico Recente: ${formData.contexto.historico.join(", ") || "Nenhum"}
   `;
 
   try {
+    // Basic Text Task using 'gemini-3-flash-preview' as per guidelines
     const response = await ai.models.generateContent({
-      model: "gemini-3-pro-preview",
+      model: "gemini-3-flash-preview",
       contents: prompt,
       config: {
-        systemInstruction: SYSTEM_INSTRUCTION,
-        temperature: 0.5,
+        systemInstruction: "Você é o Seu Luna, o Mecânico Virtual Pro da Luna Autopeças. Um profissional com 40 anos de oficina, amigável mas extremamente técnico e direto. Analise os dados do veículo, combustível, KM e os sintomas. Cruze informações (ex: Lavagem + Falha = Umidade). Gere um relatório em Markdown com: 1. 🎯 Título do Defeito Provável. 2. 🧠 Análise de Causalidade (Por que você acha isso?). 3. 📋 Ranking de 3 Hipóteses (Alta, Média, Baixa chance). 4. 🛠️ Teste Rápido sugerido para a oficina. Seja técnico, direto e use termos de mecânica profissional brasileira.",
+        temperature: 0.7,
       },
     });
 
-    return response.text || "Ocorreu um erro ao processar o diagnóstico.";
+    // Access text as a property, not a method, as per guidelines
+    return response.text || "Desculpe, não consegui analisar os dados agora. Tente novamente em instantes.";
   } catch (error) {
-    console.error("Erro Gemini:", error);
-    throw new Error("Falha na conexão com o sistema Seu Luna.");
+    console.error("Erro na API Gemini:", error);
+    throw new Error("Falha ao conectar com o Seu Luna. Verifique sua conexão.");
   }
 };

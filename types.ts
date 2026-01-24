@@ -1,33 +1,33 @@
 
-export interface FormData {
-  veiculo: {
-    marcaModelo: string;
-    ano: string;
-    km: string;
-    motorizacao: string;
-    cambio: string;
-    combustivel: string;
-  };
-  relato: string;
-  sintomas: {
-    barulhos: string[];
-    sensacoes: string[];
-    visual: string[];
-  };
-  contexto: {
-    frequencia: string;
-    condicoes: string[];
-    historico: string[];
-  };
+export interface VehicleData {
+  placa: string;
+  modelo: string;
+  ano: string;
+  km: string;
+  motor: string;
+  cambio: string;
+  combustivel: string;
 }
 
-export interface DiagnosisResponse {
-  titulo: string;
-  causa: string;
-  hipoteses: {
-    alta: string;
-    media: string;
-    baixa: string;
-  };
-  passos: string[];
+export interface Symptoms {
+  barulhos: string[];
+  sensacoes: string[];
+  painel: string[];
+}
+
+export interface ContextData {
+  frequencia: string;
+  condicao: string[];
+  historico: string[];
+}
+
+export interface AnamneseForm {
+  veiculo: VehicleData;
+  relato: string;
+  sintomas: Symptoms;
+  contexto: ContextData;
+}
+
+export interface DiagnosticResult {
+  markdown: string;
 }

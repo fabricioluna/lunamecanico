@@ -1,41 +1,33 @@
 
 import React from 'react';
-import { LogOut } from 'lucide-react';
 
-interface HeaderProps {
-  onLogout: () => void;
-}
-
-const Header: React.FC<HeaderProps> = ({ onLogout }) => {
+const Header: React.FC = () => {
   return (
-    <header className="sticky top-0 z-50 bg-[#27345b] border-b border-white/5 shadow-lg no-print">
-      <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+    <header className="bg-slate-950 text-white py-4 shadow-2xl border-b-4 border-amber-500 sticky top-0 z-50">
+      <div className="max-w-4xl mx-auto px-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="h-12 w-12 rounded-2xl border-2 border-[#f6a700] overflow-hidden bg-white shadow-inner flex items-center justify-center p-0.5">
-            <img 
-              src="./personagem.png" 
-              alt="Seu Luna"
-              className="h-full w-auto object-contain"
-              onError={(e) => e.currentTarget.src = 'https://img.icons8.com/bubbles/100/maintenance.png'}
-            />
+          <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center p-1 border-2 border-amber-500 overflow-hidden shadow-lg transform -rotate-3">
+             <img 
+              src="seu-luna.png" 
+              alt="Logo Luna" 
+              className="w-full h-full object-contain"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "https://api.dicebear.com/7.x/bottts-neutral/svg?seed=SeuLuna&backgroundColor=ffb300";
+              }}
+             />
           </div>
-          <div className="hidden sm:block">
-            <img src="./logo.png" alt="Luna" className="h-6 object-contain brightness-0 invert" />
-            <p className="text-[#f6a700] text-[9px] font-black uppercase tracking-[0.2em] mt-0.5">Mecânico Virtual</p>
-          </div>
-          <div className="sm:hidden">
-             <h1 className="text-white font-black italic text-lg leading-none">SEU LUNA</h1>
-             <p className="text-[#f6a700] text-[8px] font-bold uppercase tracking-tighter">Mecânico Virtual</p>
+          <div>
+            <h1 className="text-2xl font-brand font-black tracking-tighter leading-none text-white">LUNA</h1>
+            <p className="text-[10px] uppercase font-black text-amber-400 tracking-[0.2em]">Autopeças & Serviços</p>
           </div>
         </div>
-        
-        <button 
-          onClick={onLogout}
-          className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-red-500/20 text-white/70 hover:text-red-400 rounded-xl transition-all border border-white/10"
-        >
-          <span className="text-xs font-bold uppercase tracking-widest hidden sm:inline">Sair</span>
-          <LogOut size={18} />
-        </button>
+        <div className="text-right hidden sm:block">
+          <div className="flex items-center gap-2 justify-end mb-1">
+            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Sistemas Ativos</p>
+          </div>
+          <p className="text-sm font-black text-white uppercase tracking-tighter italic">Seu Luna Online</p>
+        </div>
       </div>
     </header>
   );

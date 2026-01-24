@@ -1,62 +1,65 @@
 
 import React, { useState } from 'react';
-import LoginForm from './components/LoginForm';
+import Login from './components/Login';
+import AnamneseForm from './components/AnamneseForm';
+import ResultView from './components/ResultView';
 import Header from './components/Header';
-import DiagnosisForm from './components/DiagnosisForm';
-import DiagnosisResult from './components/DiagnosisResult';
-import { FormData } from './types';
-import { generateDiagnosis } from './services/geminiService';
-
-const INITIAL_FORM: FormData = {
-  veiculo: { marcaModelo: '', ano: '', km: '', motorizacao: '', cambio: '', combustivel: '' },
-  relato: '',
-  sintomas: { barulhos: [], sensacoes: [], visual: [] },
-  contexto: { frequencia: '', condicoes: [], historico: [] }
-};
+import { AnamneseForm as IAnamneseForm } from './types';
+import { analyzeWithAI } from './services/geminiService';
 
 const App: React.FC = () => {
-  const [isAuth, setIsAuth] = useState(false);
-  const [data, setData] = useState<FormData>(INITIAL_FORM);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<string | null>(null);
+  const [diagnosis, setDiagnosis] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!isAuth) return <LoginForm onLogin={() => setIsAuth(true)} />;
+  const handleLogin = (password: string) => {
+    // Senha atualizada conforme pedido pelo usuário
+    if (password === 'luna1989') {
+      setIsAuthenticated(true);
+    } else {
+      alert('Senha incorreta! Verifique com o gerente da Luna Autopeças.');
+    }
+  };
 
-  const handleSubmit = async () => {
+  const handleAnalyze = async (formData: IAnamneseForm) => {
     setLoading(true);
+    setError(null);
     try {
-      const diagnosis = await generateDiagnosis(data);
-      setResult(diagnosis);
-      window.scrollTo(0, 0);
-    } catch (err) {
-      alert("Erro ao gerar diagnóstico. Verifique sua conexão.");
+      const result = await analyzeWithAI(formData);
+      setDiagnosis(result);
+    } catch (err: any) {
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
+  if (!isAuthenticated) {
+    return <Login onLogin={handleLogin} />;
+  }
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
-      <Header onLogout={() => { setIsAuth(false); setResult(null); setData(INITIAL_FORM); }} />
-      <main className="flex-grow">
-        {result ? (
-          <DiagnosisResult 
-            content={result} 
-            formData={data} 
-            onBack={() => setResult(null)} 
-          />
+    <div className="min-h-screen bg-gray-50 pb-20">
+      <Header />
+      
+      <main className="max-w-4xl mx-auto px-4 mt-8">
+        {!diagnosis ? (
+          <AnamneseForm onSubmit={handleAnalyze} isLoading={loading} />
         ) : (
-          <DiagnosisForm 
-            data={data} 
-            onChange={setData} 
-            onSubmit={handleSubmit} 
-            loading={loading} 
+          <ResultView 
+            markdown={diagnosis} 
+            onBack={() => setDiagnosis(null)} 
           />
         )}
       </main>
-      <footer className="py-6 text-center text-slate-600 text-[10px] uppercase font-bold tracking-widest no-print">
-        Luna Autopeças e Serviços © {new Date().getFullYear()}
-      </footer>
+
+      {error && (
+        <div className="fixed bottom-4 left-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded z-50 shadow-lg flex justify-between items-center">
+          <span>{error}</span>
+          <button onClick={() => setError(null)} className="font-bold">X</button>
+        </div>
+      )}
     </div>
   );
 };
