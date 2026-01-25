@@ -119,8 +119,8 @@ async function analisarComIA() {
     resContainer.classList.add('hidden');
 
     const prompt = `
-        Atue como o SEU LUNA, um Mecânico Especialista Sênior. 
-        Seu perfil é altamente técnico, formal, porém com uma linguagem clara, objetiva e educativa.
+        Atue como o SEU LUNA, um Mecânico Especialista. 
+        Seu perfil é técnico, porém com uma linguagem simples, clara, objetiva e educativa.
         Não use gírias excessivas. Foque na precisão técnica.
         
         DADOS TÉCNICOS DO VEÍCULO:
