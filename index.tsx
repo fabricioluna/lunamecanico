@@ -138,3 +138,66 @@ async function analisarComIA() {
         SINTOMAS E OBSERVAÇÕES COLETADAS:
         - Painel e Motor: ${sintomas.luzes}, ${sintomas.motorComp}. Fumaça: ${sintomas.corFumaca}. Obs: ${sintomas.extras.luz} ${sintomas.extras.motor}
         - Direção/Freios: ${sintomas.dirSusp}, ${sintomas.freios}. Obs: ${sintomas.extras.direcao} ${sintomas.extras.freio}
+        - Ruídos: Tipo: ${sintomas.ruidoTipo}. Origem: ${sintomas.ruidoOrigem} (${sintomas.rodaSpec}). Obs: ${sintomas.extras.ruido}
+        - Condições de Ocorrência: ${sintomas.condicoes}. Obs: ${sintomas.extras.condicao}
+        - Histórico: ${sintomas.historico} (${sintomas.manutDetalhe}). Obs: ${sintomas.extras.historico}
+        - Cheiros: ${sintomas.cheiros}. Obs: ${sintomas.extras.cheiro}
+        - Fluidos: Manchas: ${sintomas.manchas}. Níveis: ${sintomas.niveis}. Obs: ${sintomas.extras.fluido}
+        - Transmissão: Manual: ${sintomas.manualComp}. Auto: ${sintomas.autoComp}. Obs: ${sintomas.extras.transmissao}
+        - Elétrica: Bateria ${sintomas.idadeBateria} anos. Partida: ${sintomas.eletricaPartida}. Acessórios: ${sintomas.eletricaAcess}. Obs: ${sintomas.extras.eletrica}
+        - Frequência: ${sintomas.frequencia}
+
+        RELATO DO CONDUTOR: "${sintomas.relato}"
+
+        INSTRUÇÃO DE ESTRUTURA DO LAUDO (Markdown):
+        
+        ### 1. 🔧 Saudação Inicial
+        (Breve e cordial, confirmando o veículo analisado).
+
+        ### 2. 🎯 DIAGNÓSTICO PRINCIPAL
+        (Seja completo e técnico. Identifique o sistema e o defeito central com precisão).
+
+        ### 3. 🧠 ANÁLISE TÉCNICA
+        (Explique o raciocínio técnico de forma clara. Relacione os sintomas físicos, ruídos e luzes com o funcionamento mecânico do carro. Evite termos vagos).
+
+        ### 4. 📋 CAUSAS PROVÁVEIS
+        (Liste de 3 a 5 causas potenciais. É OBRIGATÓRIO ordenar da MAIS PROVÁVEL para a MENOS PROVÁVEL. Detalhe o componente específico).
+
+        ### 5. 📝 RESUMO E CONCLUSÃO
+        (Escreva um parágrafo síntese que sirva como comunicação universal: deve ser técnico o suficiente para o mecânico entender o que fazer, e claro o suficiente para o cliente entender o problema).
+
+        ### 6. 🚨 NÍVEL DE URGÊNCIA
+        (Defina se é Seguro Rodar, Atenção ou Parada Imediata, justificando o risco técnico).
+    `;
+
+    try {
+        // --- CONEXÃO CORRETA COM VERCEL ---
+        const response = await fetch('/api/diagnostico', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: prompt })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || data.error) {
+            throw new Error(data.error || "Erro na resposta do servidor");
+        }
+
+        const resultText = data.result;
+
+        // Exibe o container
+        resContainer.classList.remove('hidden');
+        
+        // Aplica o efeito visual (que substitui o streaming real neste caso)
+        await typeWriterEffect(resultText, resTexto, resContainer);
+
+    } catch (e: any) {
+        console.error("Erro detalhado:", e);
+        alert("Ocorreu um erro ao falar com o Seu Luna. Tente novamente em instantes.");
+        resContainer.classList.add('hidden');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = oldHtml;
+    }
+}
