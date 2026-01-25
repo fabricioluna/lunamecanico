@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-    // Permite conexões do seu site
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -10,7 +9,6 @@ export default async function handler(req, res) {
         return;
     }
 
-    // Pega a chave segura do servidor da Vercel
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
@@ -22,12 +20,25 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { prompt } = req.body;
+        // Recebe prompt e dados de áudio (se houver)
+        const { prompt, audioData, mimeType } = req.body;
+
+        const parts = [{ text: prompt }];
+
+        // Se houver áudio, adiciona à mensagem
+        if (audioData && mimeType) {
+            parts.push({
+                inlineData: {
+                    mimeType: mimeType,
+                    data: audioData
+                }
+            });
+        }
 
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            body: JSON.stringify({ contents: [{ parts: parts }] })
         });
 
         const data = await response.json();
