@@ -59,7 +59,39 @@
                 </div>
             </div>
 
-            <div class="luna-card mb-8"><h3 class="section-title"><i class="fas fa-car"></i> 1. IDENTIFICAÇÃO DO VEÍCULO</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div class="md:col-span-2"><label class="input-label">Marca / Modelo *</label><input type="text" id="modelo" class="luna-input" placeholder="Ex: Volkswagen Gol"></div><div class="grid grid-cols-2 gap-4"><div><label class="input-label">Ano</label><input type="number" id="ano" class="luna-input" placeholder="2021"></div><div><label class="input-label">KM</label><input type="number" id="km" class="luna-input" placeholder="50000"></div></div><div><label class="input-label">Motor</label><input type="text" id="motor" class="luna-input" placeholder="Ex: 1.0, 1.6..."></div><div><label class="input-label">Câmbio</label><select id="cambio" class="luna-input"><option value="Manual">Manual</option><option value="Automático">Automático</option></select></div></div></div>
+            <div class="luna-card mb-8">
+                <h3 class="section-title"><i class="fas fa-car"></i> 1. IDENTIFICAÇÃO DO VEÍCULO</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="md:col-span-2">
+                        <label class="input-label">Marca / Modelo *</label>
+                        <input type="text" id="modelo" class="luna-input" placeholder="Ex: Volkswagen Gol">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="input-label">Ano</label>
+                            <input type="number" id="ano" class="luna-input" placeholder="2021">
+                        </div>
+                        <div>
+                            <label class="input-label">KM</label>
+                            <input type="number" id="km" class="luna-input" placeholder="50000">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="input-label">Motor</label>
+                        <input type="text" id="motor" class="luna-input" placeholder="Ex: 1.0, 1.6...">
+                    </div>
+                    <div>
+                        <label class="input-label">Câmbio</label>
+                        <select id="cambio" class="luna-input">
+                            <option value="Manual">Manual</option>
+                            <option value="Automático">Automático (Convencional)</option>
+                            <option value="Automatizado">Automatizado (Dualogic/Imotion)</option>
+                            <option value="CVT">CVT (Continuamente Variável)</option>
+                            <option value="Dupla Embreagem">Dupla Embreagem (DSG/Powershift)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
             
             <div class="luna-card mb-8"><h3 class="section-title"><i class="fas fa-exclamation-circle"></i> 2. SINTOMAS PRINCIPAIS</h3><h4 class="subsection-title">A. LUZES E PAINEL</h4><div class="grid grid-cols-2 gap-3 mb-2"><label class="sintoma-card"><input type="checkbox" name="luzes" value="Luz Injeção" class="hidden"><div class="card-content">Luz Injeção</div></label><label class="sintoma-card"><input type="checkbox" name="luzes" value="Luz Bateria" class="hidden"><div class="card-content">Luz Bateria</div></label><label class="sintoma-card"><input type="checkbox" name="luzes" value="Luz Temperatura" class="hidden"><div class="card-content">Luz Temperatura</div></label><label class="sintoma-card"><input type="checkbox" name="luzes" value="Luz Freio/ABS" class="hidden"><div class="card-content">Luz Freio/ABS</div></label></div><input type="text" id="outra-luz" class="luna-input mb-6" placeholder="Outros (Ex: Luz de óleo, Airbag)..."><h4 class="subsection-title">B. MOTOR</h4><div class="grid grid-cols-2 gap-3 mb-2"><label class="sintoma-card"><input type="checkbox" name="motor_comp" value="Não Liga" class="hidden"><div class="card-content">Não Liga</div></label><label class="sintoma-card"><input type="checkbox" name="motor_comp" value="Gira mas não pega" class="hidden"><div class="card-content">Gira s/ pegar</div></label><label class="sintoma-card"><input type="checkbox" name="motor_comp" value="Falhando" class="hidden"><div class="card-content">Falhando</div></label><label class="sintoma-card"><input type="checkbox" name="motor_comp" value="Sem Potência" class="hidden"><div class="card-content">Sem Potência</div></label><label class="sintoma-card"><input type="checkbox" name="motor_comp" value="Fumaça" class="hidden"><div class="card-content">Fumaça</div></label></div><input type="text" id="cor-fumaca" class="luna-input mb-2" placeholder="Se tem fumaça, qual a cor?"><input type="text" id="outro-motor" class="luna-input mb-6" placeholder="Outros problemas no motor...">
             <h4 class="subsection-title">C. DIREÇÃO E SUSPENSÃO</h4><div class="grid grid-cols-2 gap-3 mb-2"><label class="sintoma-card"><input type="checkbox" name="dir_susp" value="Volante Vibra" class="hidden"><div class="card-content">Volante Vibra</div></label><label class="sintoma-card"><input type="checkbox" name="dir_susp" value="Puxa p/ lado" class="hidden"><div class="card-content">Puxa p/ lado</div></label><label class="sintoma-card"><input type="checkbox" name="dir_susp" value="Batida Seca" class="hidden"><div class="card-content">Batida Seca</div></label></div><input type="text" id="outra-direcao" class="luna-input mb-6" placeholder="Outros (Direção/Suspensão)..."><h4 class="subsection-title">D. FREIOS</h4><div class="grid grid-cols-2 gap-3 mb-2"><label class="sintoma-card"><input type="checkbox" name="freios" value="Pedal Baixo" class="hidden"><div class="card-content">Pedal Baixo</div></label><label class="sintoma-card"><input type="checkbox" name="freios" value="Apito/Chiado" class="hidden"><div class="card-content">Apito/Chiado</div></label><label class="sintoma-card"><input type="checkbox" name="freios" value="Ferro com Ferro" class="hidden"><div class="card-content">Ferro c/ Ferro</div></label></div><input type="text" id="outro-freio" class="luna-input mb-6" placeholder="Outros problemas de freio..."></div>
