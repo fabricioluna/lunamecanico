@@ -2,8 +2,6 @@
 import { GoogleGenAI } from "@google/genai";
 import { marked } from "marked";
 
-// Removed global API_KEY constant to use process.env.API_KEY directly inside the function.
-
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form') as HTMLFormElement;
     const passwordInput = document.getElementById('password-input') as HTMLInputElement;
@@ -52,7 +50,7 @@ async function analisarComIA() {
     };
 
     if (!vehicle.modelo) {
-        alert("Pelo menos o modelo deve ser preenchido!");
+        alert("Por favor, informe o modelo do veículo.");
         return;
     }
 
@@ -92,7 +90,7 @@ async function analisarComIA() {
 
     btn.disabled = true;
     const oldHtml = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ANALISANDO...';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> O SEU LUNA ESTÁ ANALISANDO...';
 
     const prompt = `
         Atue como o SEU LUNA, um mecânico lendário de 40 anos de praça. Sincero, técnico e gente boa.
@@ -110,31 +108,36 @@ async function analisarComIA() {
         - Elétrica: Bateria ${sintomas.idadeBateria} anos. Partida: ${sintomas.eletricaPartida}. Acessórios: ${sintomas.eletricaAcess}. Obs: ${sintomas.extras.g9}
         - Frequência: ${sintomas.frequencia}
 
-        RELATO PESSOAL: "${sintomas.relato}"
+        RELATO PESSOAL DO MOTORISTA: "${sintomas.relato}"
 
         Estrutura do seu laudo (Markdown):
         1. Saudação do Seu Luna.
         2. DIAGNÓSTICO PRINCIPAL (Foco no defeito mais provável).
-        3. ANÁLISE TÉCNICA (Explique o porquê cruzando os sintomas).
-        4. CAUSAS PROVÁVEIS (Lista de 3 a 5).
+        3. ANÁLISE TÉCNICA (Explique o raciocínio cruzando os sintomas).
+        4. CAUSAS PROVÁVEIS (Lista de 3 a 5 itens).
         5. O QUE DIZER AO SEU MECÂNICO (Instruções claras para o motorista).
-        6. NIVEL DE URGÊNCIA (Pode andar ou guincho?).
+        6. NIVEL DE URGÊNCIA (Explicar se é perigoso rodar).
     `;
 
     try {
-        // Correct initialization of GoogleGenAI using the named parameter and direct process.env.API_KEY access.
         const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-        // Using gemini-3-pro-preview for advanced reasoning task.
+        // Utilizando o modelo gemini-2.5-flash-preview-09-2025 para maior estabilidade
         const response = await ai.models.generateContent({
-            model: "gemini-3-pro-preview",
-            contents: prompt
+            model: "gemini-2.5-flash-preview-09-2025",
+            contents: [{ role: 'user', parts: [{ text: prompt }] }]
         });
 
-        resTexto.innerHTML = await marked.parse(response.text || "Erro ao processar.");
+        const resultText = response.text || "Desculpe, não consegui processar as informações agora.";
+        resTexto.innerHTML = await marked.parse(resultText);
         resContainer.classList.remove('hidden');
         resContainer.scrollIntoView({ behavior: 'smooth' });
-    } catch (e) {
-        alert("Erro no Seu Luna. Verifique a internet e a chave da API.");
+    } catch (e: any) {
+        console.error("Erro detalhado na API Gemini:", e);
+        let msg = "Ocorreu um erro ao falar com o Seu Luna. Verifique sua conexão ou tente novamente.";
+        if (e.message?.includes("API key not valid")) {
+            msg = "Erro: Chave da API inválida.";
+        }
+        alert(msg);
     } finally {
         btn.disabled = false;
         btn.innerHTML = oldHtml;
