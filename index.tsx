@@ -139,7 +139,7 @@ async function analisarComIA() {
 
         ESTRUTURA OBRIGATÓRIA (Markdown):
         ### 1. 🔧 Saudação Inicial
-        (Breve e cordial).
+        (Breve e cordial, fale que é o Seu Luna, o seu mecânico virtual).
 
         ### 2. 🎯 DIAGNÓSTICO PRINCIPAL
         (Seja completo e técnico. Identifique o sistema e o defeito central com precisão. Se os dados forem vagos, baseie-se na estatística de falhas desse modelo).
