@@ -7,6 +7,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const appScreen = document.getElementById('app-screen');
     const logoutBtn = document.getElementById('logout-btn');
 
+    // Lógica visual do Upload de Áudio
+    const audioInput = document.getElementById('audio-upload') as HTMLInputElement;
+    const audioPreview = document.getElementById('audio-preview');
+    const audioFilename = document.getElementById('audio-filename');
+
+    if (audioInput && audioPreview && audioFilename) {
+        audioInput.addEventListener('change', () => {
+            if (audioInput.files && audioInput.files.length > 0) {
+                audioPreview.classList.remove('hidden');
+                audioFilename.textContent = audioInput.files[0].name;
+            } else {
+                audioPreview.classList.add('hidden');
+            }
+        });
+    }
+
     if (loginForm) {
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -25,6 +41,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnAnalisar = document.getElementById('btn-analisar');
     if (btnAnalisar) btnAnalisar.addEventListener('click', analisarComIA);
 });
+
+// Converte arquivo para Base64 limpo (sem header data:...)
+const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            const result = reader.result as string;
+            // Remove o prefixo "data:audio/mp3;base64,"
+            const base64Data = result.split(',')[1]; 
+            resolve(base64Data);
+        };
+        reader.onerror = error => reject(error);
+    });
+};
 
 async function typeWriterEffect(text: string, element: HTMLElement, container: HTMLElement) {
     const htmlContent = await marked.parse(text);
@@ -49,6 +80,7 @@ async function analisarComIA() {
     const btn = document.getElementById('btn-analisar') as HTMLButtonElement;
     const resContainer = document.getElementById('resultado-container');
     const resTexto = document.getElementById('resultado-texto');
+    const audioInput = document.getElementById('audio-upload') as HTMLInputElement;
 
     if (!btn || !resContainer || !resTexto) return;
 
@@ -66,7 +98,6 @@ async function analisarComIA() {
         cambio: getVal('cambio')
     };
 
-    // Única validação obrigatória: Modelo
     if (!vehicle.modelo) {
         alert("Por favor, informe pelo menos o Modelo do veículo.");
         return;
@@ -116,42 +147,72 @@ async function analisarComIA() {
     resTexto.innerHTML = "";
     resContainer.classList.add('hidden');
 
+    // --- Processamento de Áudio ---
+    let audioData = null;
+    let mimeType = null;
+    let audioContextMessage = "";
+
+    if (audioInput && audioInput.files && audioInput.files.length > 0) {
+        try {
+            const file = audioInput.files[0];
+            // Limite de 3MB para evitar erro de Payload na Vercel Free
+            const maxSize = 3 * 1024 * 1024; 
+            
+            if (file.size > maxSize) {
+                alert("O arquivo de áudio é muito grande (Máx 3MB). Por favor, grave um áudio mais curto.");
+                btn.disabled = false;
+                btn.innerHTML = oldHtml;
+                return;
+            }
+
+            audioData = await fileToBase64(file);
+            mimeType = file.type;
+            audioContextMessage = " (ATENÇÃO: O USUÁRIO ENVIOU UM ÁUDIO. ANALISE-O PARA IDENTIFICAR O PADRÃO SONORO).";
+            
+        } catch (error) {
+            console.error("Erro ao ler áudio:", error);
+            alert("Erro ao processar o arquivo de áudio.");
+            btn.disabled = false;
+            btn.innerHTML = oldHtml;
+            return;
+        }
+    }
+
     const prompt = `
         Atue como o SEU LUNA, um Mecânico Especialista Sênior. 
         Perfil: Técnico, formal, linguagem clara, objetiva e educativa. Sem gírias excessivas.
         
-        CONTEXTO (DADOS PARA ANÁLISE - NÃO REPITA ISSO NO RELATÓRIO FINAL):
+        CONTEXTO (DADOS PARA ANÁLISE):
         Veículo: ${vehicle.modelo} | ${vehicle.ano} | ${vehicle.km} km | ${vehicle.motor} | ${vehicle.cambio}
-        Sintomas: ${sintomas.luzes} ${sintomas.motorComp} ${sintomas.dirSusp} ${sintomas.freios}
-        Ruídos: ${sintomas.ruidoTipo} em ${sintomas.ruidoOrigem} (${sintomas.rodaSpec})
-        Condições: ${sintomas.condicoes}
-        Histórico: ${sintomas.historico} (${sintomas.manutDetalhe})
-        Cheiros/Fluidos: ${sintomas.cheiros} ${sintomas.manchas} ${sintomas.niveis}
-        Transmissão/Elétrica: ${sintomas.manualComp} ${sintomas.autoComp} ${sintomas.eletricaPartida} ${sintomas.eletricaAcess} (Bateria ${sintomas.idadeBateria} anos)
-        Frequência: ${sintomas.frequencia}
-        Relato Cliente: "${sintomas.relato}"
-        Outros: ${Object.values(sintomas.extras).join(' ')}
+        
+        SINTOMAS RELATADOS:
+        - Ruídos Marcados: ${sintomas.ruidoTipo} em ${sintomas.ruidoOrigem}. Obs: ${sintomas.extras.ruido} ${audioContextMessage}
+        - Painel/Motor: ${sintomas.luzes}, ${sintomas.motorComp}.
+        - Outros Sintomas: ${sintomas.dirSusp} ${sintomas.freios} ${sintomas.cheiros} ${sintomas.manchas}
+        - Contexto: ${sintomas.condicoes} | Frequência: ${sintomas.frequencia}
+        - Relato Cliente: "${sintomas.relato}"
+        - Outros: ${Object.values(sintomas.extras).join(' ')}
 
         DIRETRIZES DE RESPOSTA:
-        1. NÃO repita os dados do formulário (ex: "O usuário relatou..."). Vá direto para o diagnóstico.
-        2. Se houver POUCA informação, use seu conhecimento sobre DEFEITOS CRÔNICOS DESTE MODELO (${vehicle.modelo}) para criar a hipótese mais provável, mas ADICIONE UM AVISO CLARO de que o diagnóstico é preliminar por falta de dados.
-        3. A única informação garantida é a Marca/Modelo. O resto pode estar vazio; se estiver, ignore.
-
+        1. NÃO repita os dados do formulário. Vá direto para a análise.
+        2. Se houver ÁUDIO: Descreva o som que você ouviu (ex: "Ouço um tec-tec metálico rítmico") e use isso como prova principal.
+        3. Se houver POUCA informação, use estatística de DEFEITOS CRÔNICOS DESTE MODELO mas AVISE que é preliminar.
+        
         ESTRUTURA OBRIGATÓRIA (Markdown):
         ### 1. 🔧 Saudação Inicial
-        (Breve e cordial, fale que é o Seu Luna, o seu mecânico virtual).
+        (Breve e cordial).
 
         ### 2. 🎯 DIAGNÓSTICO PRINCIPAL
-        (Seja completo e técnico. Identifique o sistema e o defeito central com precisão. Se os dados forem vagos, baseie-se na estatística de falhas desse modelo).
+        (Identifique o sistema e o defeito central. Se ouviu o áudio, mencione-o aqui).
 
         ### 3. 🧠 ANÁLISE TÉCNICA
-        (Explique o raciocínio técnico de forma clara e objetiva. Relacione os sintomas com o funcionamento mecânico. Evite termos genéricos).
+        (Explique o funcionamento mecânico e como os sintomas/áudio levam a essa conclusão).
 
         ### 4. 📋 CAUSAS PROVÁVEIS
-        (Liste de 3 a 5 causas. É OBRIGATÓRIO ordenar da MAIS PROVÁVEL para a MENOS PROVÁVEL, tente explicar o motivo que leva a cada fallha, inclusive citando as peças que podem estar com problema).
+        (Liste de 3 a 5 causas ordenadas da MAIS PROVÁVEL para a MENOS PROVÁVEL).
 
         ### 5. 🛠️ TESTES SUGERIDOS
-        (Liste 3 testes práticos ou verificações visuais para confirmar a causa. Ex: "Verificar se há trinca na mangueira X", "Testar a carga da bateria com multímetro").
+        (Liste 3 testes práticos ou verificações visuais para confirmar a causa).
 
         ### 6. 📝 RESUMO E CONCLUSÃO
         (Síntese técnica e clara para mecânico e cliente).
@@ -164,7 +225,11 @@ async function analisarComIA() {
         const response = await fetch('/api/diagnostico', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: prompt })
+            body: JSON.stringify({ 
+                prompt: prompt,
+                audioData: audioData, // Envia null se não tiver áudio
+                mimeType: mimeType
+            })
         });
 
         const data = await response.json();
