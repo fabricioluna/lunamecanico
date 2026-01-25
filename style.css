@@ -123,16 +123,91 @@ body {
     color: #0f172a; /* Texto escuro no fundo laranja */
 }
 
-/* --- Configuração de Impressão --- */
+/* =========================================
+   CONFIGURAÇÃO DE IMPRESSÃO (CORRIGIDA)
+   ========================================= */
 @media print {
-    body * { visibility: hidden; }
-    #resultado-container, #resultado-container * { visibility: visible; }
-    #resultado-container {
-        position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 20px;
-        background-color: white !important; color: black !important;
-        border: none !important; box-shadow: none !important;
+    /* 1. Configuração da Página */
+    @page {
+        margin: 1.5cm; /* Margem padrão de documento */
+        size: auto;
     }
-    #resultado-container button { display: none !important; }
-    .prose, .prose p, .prose li, .prose strong { color: black !important; }
-    .prose h3 { color: black !important; border-bottom: 2px solid black !important; }
+
+    /* 2. Reseta o corpo da página */
+    html, body {
+        background: white !important;
+        height: auto !important;
+        overflow: visible !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* 3. Esconde TUDO por padrão (Display None remove o espaço físico) */
+    body > * {
+        display: none !important;
+    }
+
+    /* 4. Traz de volta apenas o container principal do App */
+    #app-screen {
+        display: block !important;
+        position: static !important;
+        background: white !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* 5. Dentro do App, esconde Navbar, Rodapé e outros elementos estruturais */
+    nav, 
+    .mt-8.pb-8, /* Footer */
+    #logout-btn {
+        display: none !important;
+    }
+
+    /* 6. A MÁGICA: Esconde todos os irmãos do resultado (Formulário, Títulos, Botões) */
+    /* Isso garante que apenas o relatório exista na lista de renderização */
+    #app-screen .max-w-4xl > *:not(#resultado-container) {
+        display: none !important;
+    }
+
+    /* 7. Estiliza o Relatório */
+    #resultado-container {
+        display: block !important;
+        visibility: visible !important;
+        position: relative !important; /* Relative flui melhor que Absolute neste caso */
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: white !important;
+        color: black !important;
+    }
+
+    /* 8. Garante visibilidade interna do relatório e cores de tinta (Preto) */
+    #resultado-container * {
+        visibility: visible !important;
+        color: black !important;
+    }
+
+    /* 9. Esconde os botões de ação do próprio relatório (Imprimir/Novo) */
+    #resultado-container button {
+        display: none !important;
+    }
+
+    /* 10. Ajustes de tipografia para papel */
+    .prose h3 {
+        color: black !important;
+        border-bottom: 2px solid black !important;
+        margin-top: 20px !important;
+    }
+    .prose p, .prose li {
+        color: black !important;
+        font-size: 12pt !important;
+        line-height: 1.5 !important;
+    }
 }
