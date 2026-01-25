@@ -178,3 +178,47 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: #f59e0b;
 }
+/* =========================================
+   CONFIGURAÇÃO DE IMPRESSÃO (PRINT)
+   ========================================= */
+@media print {
+    /* 1. Esconde TUDO na página por padrão */
+    body * {
+        visibility: hidden;
+    }
+
+    /* 2. Torna visível apenas a área do relatório */
+    #resultado-container, 
+    #resultado-container * {
+        visibility: visible;
+    }
+
+    /* 3. Posiciona o relatório no topo da folha e remove estilos "Dark Mode" para economizar tinta */
+    #resultado-container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 20px;
+        background-color: white !important; /* Fundo branco */
+        color: black !important; /* Texto preto */
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    /* 4. Esconde os botões de ação (Imprimir/Novo) para não saírem no papel */
+    #resultado-container button {
+        display: none !important;
+    }
+
+    /* 5. Força a cor dos textos e títulos para preto (melhor leitura no papel) */
+    .prose, .prose p, .prose li, .prose strong {
+        color: black !important;
+    }
+    
+    .prose h3 {
+        color: black !important;
+        border-bottom: 2px solid black !important;
+    }
+}
