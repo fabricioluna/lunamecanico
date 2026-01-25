@@ -8,58 +8,35 @@ export interface VehicleData {
 }
 
 export interface Symptoms {
-  // Outros por Grupo (Removido 1)
-  outroGrupo2: string;
-  outroGrupo3: string;
-  outroGrupo4: string;
-  outroGrupo5: string;
-  outroGrupo6: string;
-  outroGrupo7: string;
-  outroGrupo8: string;
-  outroGrupo9: string;
-
-  // 2. Sintoma Principal
-  luzes: string[];
-  motorComportamento: string[];
+  luzes: string;
+  motorComp: string;
   corFumaca: string;
-  direcaoSuspensao: string[];
-  freios: string[];
-  
-  // 3. Ruídos
-  ruidosTipo: string[];
-  ruidosOrigem: string[];
-  especificacaoRoda: string;
-
-  // 4. Condições
-  condicoesTemperatura: string[];
-  condicoesVelocidade: string[];
-  condicoesClima: string[];
-
-  // 5. Histórico
-  historicoRecente: string[]; // Padronizado como lista de seleção
-  manutencaoRecenteDetalhe: string;
-
-  // 6. Cheiros
-  cheiros: string[];
-
-  // 7. Fluidos
-  vazamentos: string[];
-  fluidosNivel: string[];
-
-  // 8. Transmissão
-  transmissao: string[];
-
-  // 9. Elétrica
+  dirSusp: string;
+  freios: string;
+  ruidoTipo: string;
+  ruidoOrigem: string;
+  rodaSpec: string;
+  condicoes: string;
+  historico: string;
+  manutDetalhe: string;
+  cheiros: string;
+  manchas: string;
+  niveis: string;
+  manualComp: string;
+  autoComp: string;
+  eletricaPartida: string;
+  eletricaAcess: string;
   idadeBateria: string;
-  eletricaPartida: string[];
-  eletricaAcessorios: string[];
-
-  // 10. Frequência e Relato
   frequencia: string;
   relato: string;
-}
-
-export interface DiagnosticResult {
-  text: string;
-  timestamp: number;
+  extras: {
+    g2: string;
+    g3: string;
+    g4: string;
+    g5: string;
+    g6: string;
+    g7: string;
+    g8: string;
+    g9: string;
+  };
 }
