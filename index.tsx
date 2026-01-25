@@ -148,13 +148,16 @@ async function analisarComIA() {
         (Explique o raciocínio técnico de forma clara e objetiva. Relacione os sintomas com o funcionamento mecânico. Evite termos genéricos).
 
         ### 4. 📋 CAUSAS PROVÁVEIS
-        (Liste de 3 a 5 causas. É OBRIGATÓRIO ordenar da MAIS PROVÁVEL para a MENOS PROVÁVEL).
+        (Liste de 3 a 5 causas. É OBRIGATÓRIO ordenar da MAIS PROVÁVEL para a MENOS PROVÁVEL, tente explicar o motivo que leva a cada fallha, inclusive citando as peças que podem estar com problema).
 
-        ### 5. 📝 RESUMO E CONCLUSÃO
-        (Um parágrafo síntese que sirva como comunicação universal: técnico o suficiente para o mecânico entender o que fazer, e claro o suficiente para o cliente entender a gravidade).
+        ### 5. 🛠️ TESTES SUGERIDOS
+        (Liste 3 testes práticos ou verificações visuais para confirmar a causa. Ex: "Verificar se há trinca na mangueira X", "Testar a carga da bateria com multímetro").
 
-        ### 6. 🚨 NÍVEL DE URGÊNCIA
-        (Seguro Rodar, Atenção ou Parada Imediata - Justifique).
+        ### 6. 📝 RESUMO E CONCLUSÃO
+        (Síntese técnica e clara para mecânico e cliente).
+
+        ### 7. 🚨 NÍVEL DE URGÊNCIA
+        (Seguro Rodar, Atenção ou Parada Imediata).
     `;
 
     try {
