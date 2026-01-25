@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (loginForm) {
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            // Senha definida: luna1989
             if (passwordInput.value.trim() === 'luna1989') {
                 loginScreen?.classList.add('hidden');
                 appScreen?.classList.remove('hidden');
@@ -35,14 +34,13 @@ async function analisarComIA() {
 
     if (!btn || !resContainer || !resTexto) return;
 
-    // Funções auxiliares para pegar valores
+    // Funções auxiliares
     const getVal = (id: string) => (document.getElementById(id) as HTMLInputElement)?.value || "";
     const getChecked = (name: string) => {
         const els = document.querySelectorAll(`input[name="${name}"]:checked`) as NodeListOf<HTMLInputElement>;
         return Array.from(els).map(el => el.value).join(', ');
     };
 
-    // Coleta de dados do Veículo
     const vehicle = {
         modelo: getVal('modelo'),
         ano: getVal('ano'),
@@ -56,7 +54,7 @@ async function analisarComIA() {
         return;
     }
 
-    // Coleta dos Sintomas e Diagnósticos
+    // Coleta COMPLETA de dados + "Outros"
     const sintomas = {
         luzes: getChecked('luzes'),
         motorComp: getChecked('motor_comp'),
@@ -79,56 +77,55 @@ async function analisarComIA() {
         idadeBateria: getVal('idade-bateria'),
         frequencia: (document.querySelector('input[name="frequencia"]:checked') as HTMLInputElement)?.value || "Intermitente",
         relato: (document.getElementById('relato') as HTMLTextAreaElement)?.value || "",
+        // Captura dos campos "Outros"
         extras: {
-            g2: getVal('outro-grupo2'),
-            g3: getVal('outro-grupo3'),
-            g4: getVal('outro-grupo4'),
-            g5: getVal('outro-grupo5'),
-            g6: getVal('outro-grupo6'),
-            g7: getVal('outro-grupo7'),
-            g8: getVal('outro-grupo8'),
-            g9: getVal('outro-grupo9')
+            luz: getVal('outra-luz'),
+            motor: getVal('outro-motor'),
+            direcao: getVal('outra-direcao'),
+            freio: getVal('outro-freio'),
+            ruido: getVal('outro-ruido'),
+            condicao: getVal('outra-condicao'),
+            historico: getVal('outro-historico'),
+            cheiro: getVal('outro-cheiro'),
+            fluido: getVal('outro-fluido'),
+            transmissao: getVal('outra-transmissao'),
+            eletrica: getVal('outra-eletrica')
         }
     };
 
-    // UI de Carregamento
     btn.disabled = true;
     const oldHtml = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> O SEU LUNA ESTÁ ANALISANDO...';
+    btn.innerHTML = '<i class="fas fa-bolt fa-pulse"></i> SEU LUNA ESTÁ ESCREVENDO...';
 
-    // Construção do Prompt Otimizado para Formatação Markdown
+    // Limpa e exibe container
+    resTexto.innerHTML = "";
+    resContainer.classList.remove('hidden');
+
     const prompt = `
         Atue como o SEU LUNA, um mecânico lendário de 40 anos de praça. Sincero, técnico e gente boa.
-        
-        DADOS DO VEÍCULO:
-        - Modelo: ${vehicle.modelo} | Ano: ${vehicle.ano} | KM: ${vehicle.km}
-        - Motor: ${vehicle.motor} | Câmbio: ${vehicle.cambio}
+        DADOS DO CARRO: ${vehicle.modelo} | Ano: ${vehicle.ano} | KM: ${vehicle.km} | Motor: ${vehicle.motor} | Câmbio: ${vehicle.cambio}
 
-        RELATÓRIO DE SINTOMAS:
-        - Painel e Motor: ${sintomas.luzes}, ${sintomas.motorComp}. (Fumaça: ${sintomas.corFumaca}). Obs: ${sintomas.extras.g2}
-        - Suspensão e Freios: ${sintomas.dirSusp}, ${sintomas.freios}.
-        - Ruídos: Tipo: ${sintomas.ruidoTipo}. Origem: ${sintomas.ruidoOrigem} (${sintomas.rodaSpec}). Obs: ${sintomas.extras.g3}
-        - Contexto (Quando ocorre): ${sintomas.condicoes}. Obs: ${sintomas.extras.g4}
-        - Histórico: ${sintomas.historico} (${sintomas.manutDetalhe}). Obs: ${sintomas.extras.g5}
-        - Cheiros: ${sintomas.cheiros}. Obs: ${sintomas.extras.g6}
-        - Fluidos: ${sintomas.manchas}. Níveis: ${sintomas.niveis}. Obs: ${sintomas.extras.g7}
-        - Transmissão: ${sintomas.manualComp} ${sintomas.autoComp}. Obs: ${sintomas.extras.g8}
-        - Elétrica: Bateria ${sintomas.idadeBateria} anos. Partida: ${sintomas.eletricaPartida}. Acessórios: ${sintomas.eletricaAcess}. Obs: ${sintomas.extras.g9}
+        DIAGNÓSTICO FORMULÁRIO:
+        - Sintomas (Painel/Motor): ${sintomas.luzes}, ${sintomas.motorComp}. Fumaça: ${sintomas.corFumaca}. Obs: ${sintomas.extras.luz} ${sintomas.extras.motor}
+        - Direção/Freios: ${sintomas.dirSusp}, ${sintomas.freios}. Obs: ${sintomas.extras.direcao} ${sintomas.extras.freio}
+        - Ruídos: Tipo: ${sintomas.ruidoTipo}. Origem: ${sintomas.ruidoOrigem} (${sintomas.rodaSpec}). Obs: ${sintomas.extras.ruido}
+        - Quando acontece: ${sintomas.condicoes}. Obs: ${sintomas.extras.condicao}
+        - Histórico: ${sintomas.historico} (${sintomas.manutDetalhe}). Obs: ${sintomas.extras.historico}
+        - Cheiros: ${sintomas.cheiros}. Obs: ${sintomas.extras.cheiro}
+        - Fluidos: Manchas: ${sintomas.manchas}. Níveis: ${sintomas.niveis}. Obs: ${sintomas.extras.fluido}
+        - Transmissão: Manual: ${sintomas.manualComp}. Auto: ${sintomas.autoComp}. Obs: ${sintomas.extras.transmissao}
+        - Elétrica: Bateria ${sintomas.idadeBateria} anos. Partida: ${sintomas.eletricaPartida}. Acessórios: ${sintomas.eletricaAcess}. Obs: ${sintomas.extras.eletrica}
         - Frequência: ${sintomas.frequencia}
 
-        RELATO DO MOTORISTA: "${sintomas.relato}"
+        RELATO PESSOAL DO MOTORISTA: "${sintomas.relato}"
 
-        INSTRUÇÃO DE FORMATAÇÃO:
-        Responda utilizando Markdown rigoroso para estruturar o relatório.
-        Use "###" para títulos das seções.
-        Não use listas numeradas simples para os títulos principais, use os headers (###).
-
-        ESTRUTURA DO LAUDO:
+        Estrutura obrigatória do laudo (use Markdown):
+        
         ### 1. 🔧 Saudação do Seu Luna
         (Comece com uma saudação amigável e comente brevemente sobre o carro/modelo).
 
         ### 2. 🎯 DIAGNÓSTICO PRINCIPAL
-        (Vá direto ao ponto sobre o defeito mais provável).
+        (Vá direto ao ponto sobre o defeito mais provável em negrito).
 
         ### 3. 🧠 ANÁLISE TÉCNICA
         (Explique o raciocínio cruzando os sintomas de forma didática e técnica).
@@ -137,7 +134,7 @@ async function analisarComIA() {
         (Liste de 3 a 5 itens usando bullet points).
 
         ### 5. 🗣️ O QUE DIZER AO SEU MECÂNICO
-        (Instruções claras do que pedir para verificar na oficina).
+        (Instruções claras do que pedir para verificar).
 
         ### 6. 🚨 NÍVEL DE URGÊNCIA
         (Explique se é perigoso rodar ou se pode esperar).
@@ -145,65 +142,43 @@ async function analisarComIA() {
 
     try {
         const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-        const response = await ai.models.generateContent({
+        
+        const response = await ai.models.generateContentStream({
             model: "gemini-2.5-flash-preview-09-2025",
             contents: [{ role: 'user', parts: [{ text: prompt }] }]
         });
 
-        const resultText = response.text || "Desculpe, não consegui processar as informações agora.";
-        
-        // Converte Markdown para HTML
-        const rawHtml = await marked.parse(resultText);
+        let accumulatedText = "";
 
-        // Injeta o HTML com estilização forçada para garantir a beleza do relatório
-        resTexto.innerHTML = `
-            <div class="prose prose-invert max-w-none text-justify leading-relaxed text-slate-300">
-                <style>
-                    /* Estilos embutidos para garantir a formatação exata */
-                    .prose h3 { 
-                        color: #f59e0b; /* Cor Âmbar da Luna */
-                        font-size: 1.25rem; 
-                        font-weight: 700; 
-                        margin-top: 1.5rem; 
-                        margin-bottom: 0.75rem; 
-                        border-bottom: 1px solid rgba(245, 158, 11, 0.2); 
-                        padding-bottom: 0.25rem;
-                    }
-                    .prose p { 
-                        margin-bottom: 1rem; 
-                        line-height: 1.7;
-                    }
-                    .prose ul { 
-                        list-style-type: disc; 
-                        padding-left: 1.5rem; 
-                        margin-bottom: 1.25rem; 
-                    }
-                    .prose li { 
-                        margin-bottom: 0.5rem; 
-                        color: #e2e8f0; /* Texto mais claro para listas */
-                    }
-                    .prose strong { 
-                        color: #fff; 
-                        font-weight: 600; 
-                    }
-                </style>
-                ${rawHtml}
-            </div>
-        `;
-
-        resContainer.classList.remove('hidden');
-        resContainer.scrollIntoView({ behavior: 'smooth' });
+        for await (const chunk of response.stream) {
+            const chunkText = chunk.text();
+            if (chunkText) {
+                accumulatedText += chunkText;
+                resTexto.innerHTML = `
+                    <div class="prose prose-invert max-w-none text-justify leading-relaxed space-y-4">
+                        <style>
+                            .prose h3 { color: #f59e0b; margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.25rem; font-weight: 700; border-bottom: 1px solid #f59e0b55; padding-bottom: 0.25rem; }
+                            .prose p { margin-bottom: 1rem; color: #cbd5e1; }
+                            .prose strong { color: #fff; font-weight: 700; }
+                            .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
+                            .prose li { margin-bottom: 0.5rem; color: #cbd5e1; }
+                        </style>
+                        ${await marked.parse(accumulatedText)}
+                    </div>
+                `;
+                resContainer.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }
+        }
+        resContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
     } catch (e: any) {
-        console.error("Erro detalhado na API Gemini:", e);
-        let msg = "Ocorreu um erro ao falar com o Seu Luna. Verifique sua conexão ou tente novamente.";
-        
-        // Tratamento de erro específico para chave inválida
+        console.error("Erro detalhado:", e);
+        let msg = "Ocorreu um erro ao falar com o Seu Luna. Verifique sua conexão.";
         if (e.message?.includes("API key not valid")) {
-            msg = "Erro de Configuração: A Chave da API (API Key) parece inválida ou não foi configurada corretamente.";
+            msg = "Erro: Chave da API inválida.";
         }
-        
         alert(msg);
+        resContainer.classList.add('hidden');
     } finally {
         btn.disabled = false;
         btn.innerHTML = oldHtml;
