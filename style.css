@@ -98,7 +98,7 @@ body {
     border-color: #64748b;
 }
 
-/* Estado Selecionado (Serve para todos os inputs dentro de .sintoma-card) */
+/* Estado Selecionado */
 .sintoma-card input:checked + .card-content {
     background-color: rgba(245, 158, 11, 0.15);
     border-color: #f59e0b;
@@ -120,114 +120,52 @@ body {
     transition: all 0.2s;
 }
 .freq-tab input:checked + .tab-content {
-    color: #0f172a; /* Texto escuro no fundo laranja */
+    color: #0f172a;
+}
+
+/* --- Áudio Recording --- */
+@keyframes pulse-red {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.recording-active {
+    animation: pulse-red 1.5s infinite;
+    border-color: #ef4444 !important;
+    background-color: rgba(239, 68, 68, 0.1) !important;
+}
+
+audio {
+    filter: invert(1) hue-rotate(180deg);
+    border-radius: 4px;
 }
 
 /* =========================================
    CONFIGURAÇÃO DE IMPRESSÃO (FINAL)
    ========================================= */
 @media print {
-    /* 1. Configuração da Página */
-    @page {
-        margin: 1cm 1.5cm;
-        size: auto;
-    }
-
-    /* 2. Reseta o corpo da página */
-    html, body {
-        background: white !important;
-        height: auto !important;
-        overflow: visible !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        font-size: 11pt;
-    }
-
-    /* 3. Esconde TUDO por padrão */
+    @page { margin: 1cm 1.5cm; size: auto; }
+    html, body { background: white !important; height: auto !important; overflow: visible !important; margin: 0 !important; padding: 0 !important; font-size: 11pt; }
     body > * { display: none !important; }
-
-    /* 4. Traz de volta a estrutura necessária */
-    #app-screen {
-        display: block !important;
-        background: white !important;
-        width: 100% !important;
-        height: auto !important;
-        padding: 0 !important;
-        margin: 0 !important;
-    }
-    
-    /* 5. Esconde elementos desnecessários do app */
+    #app-screen { display: block !important; background: white !important; width: 100% !important; height: auto !important; padding: 0 !important; margin: 0 !important; }
     nav, .mt-8.pb-8, #logout-btn, #login-screen { display: none !important; }
-
-    /* 6. Garante que só o container do relatório apareça */
     #app-screen .max-w-4xl > *:not(#resultado-container) { display: none !important; }
-
-    /* 7. Estiliza o Container do Relatório para Papel */
+    
     #resultado-container {
-        display: block !important;
-        visibility: visible !important;
-        position: relative !important;
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        background: white !important;
-        color: black !important;
-        overflow: visible !important;
+        display: block !important; visibility: visible !important; position: relative !important; width: 100% !important; margin: 0 !important; padding: 0 !important; background: white !important; color: black !important; overflow: visible !important;
     }
-
-    /* 8. Força a visibilidade dos itens internos */
-    #resultado-container * {
-        visibility: visible !important;
-    }
-
-    /* 9. Header de Impressão (Logo 4) */
-    .print-header {
-        display: block !important;
-        position: absolute !important;
-        top: -10px !important;
-        right: 0 !important; /* Joga para o lado direito */
-    }
-    .print-header img {
-        height: 50px !important;
-        width: auto;
-    }
-
-    /* 10. Footer de Impressão (Logo 3) */
-    .print-footer {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        margin-top: 40px !important;
-        padding-top: 20px !important;
-        border-top: 1px solid #ddd !important;
-        page-break-inside: avoid;
-    }
-    .print-footer img {
-        height: 35px !important;
-        filter: grayscale(100%) !important;
-    }
-    .print-footer p {
-        color: #666 !important;
-        font-size: 9pt !important;
-        margin-top: 5px !important;
-    }
-
-    /* 11. Tipografia do Relatório */
-    .prose h3 {
-        color: #000 !important;
-        border-bottom: 2px solid #000 !important;
-        margin-top: 25px !important;
-        font-size: 14pt !important;
-    }
-    .prose p, .prose li {
-        color: #000 !important;
-        line-height: 1.5 !important;
-    }
-    .prose ul {
-        list-style-type: disc !important;
-        padding-left: 1.5em !important;
-    }
-    .prose li {
-        display: list-item !important;
-    }
+    #resultado-container * { visibility: visible !important; }
+    
+    .print-header { display: block !important; position: absolute !important; top: -10px !important; right: 0 !important; }
+    .print-header img { height: 50px !important; width: auto; }
+    
+    .print-footer { display: flex !important; flex-direction: column !important; align-items: center !important; margin-top: 40px !important; padding-top: 20px !important; border-top: 1px solid #ddd !important; page-break-inside: avoid; }
+    .print-footer img { height: 35px !important; filter: grayscale(100%) !important; }
+    .print-footer p { color: #666 !important; font-size: 9pt !important; margin-top: 5px !important; }
+    
+    .prose h3 { color: #000 !important; border-bottom: 2px solid #000 !important; margin-top: 25px !important; font-size: 14pt !important; }
+    .prose p, .prose li { color: #000 !important; line-height: 1.5 !important; }
+    .prose ul { list-style-type: disc !important; padding-left: 1.5em !important; }
+    .prose li { display: list-item !important; }
 }
