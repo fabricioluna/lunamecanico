@@ -212,6 +212,7 @@ async function analisarComIA() {
         eletricaAcess: getChecked('eletrica_acess'),
         idadeBateria: getVal('idade-bateria'),
         frequencia: (document.querySelector('input[name="frequencia"]:checked') as HTMLInputElement)?.value || "Não informado",
+        tentativasSolucao: getVal('tentativas-solucao'), // NOVO CAMPO
         relato: (document.getElementById('relato') as HTMLTextAreaElement)?.value || "",
         extras: {
             luz: getVal('outra-luz'),
@@ -275,13 +276,14 @@ async function analisarComIA() {
         - Painel/Motor: ${sintomas.luzes}, ${sintomas.motorComp}.
         - Outros Sintomas: ${sintomas.dirSusp} ${sintomas.freios} ${sintomas.cheiros} ${sintomas.manchas}
         - Contexto: ${sintomas.condicoes} | Frequência: ${sintomas.frequencia}
+        - Tentativas de Solução Prévias: "${sintomas.tentativasSolucao}"
         - Relato Cliente: "${sintomas.relato}"
         - Outros: ${Object.values(sintomas.extras).join(' ')}
 
         DIRETRIZES:
         1. NÃO repita os dados do formulário.
         2. Se houver ÁUDIO: Descreva o som (ex: "tec-tec metálico", "zumbido agudo") e use como prova principal.
-        3. Se houver POUCA informação, use estatística de falhas conhecidas do modelo.
+        3. Se houver "Tentativas de Solução", leve em consideração o que já foi feito para não sugerir o mesmo erro, ou sugerir revisar a instalação.
         
         ESTRUTURA OBRIGATÓRIA (Markdown):
         ### 1. 🔧 Saudação Inicial
