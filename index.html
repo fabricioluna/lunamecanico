@@ -74,15 +74,39 @@
                     <label class="sintoma-card"><input type="checkbox" name="ruido_origem" value="Rodas" class="hidden"><div class="card-content">Rodas</div></label>
                 </div>
                 
-                <div class="mb-4 bg-[#0f172a] border border-slate-700 rounded-xl p-4 flex flex-col items-center justify-center text-center border-dashed relative group hover:border-amber-500/50 transition-colors">
-                    <label for="audio-upload" class="cursor-pointer w-full h-full flex flex-col items-center justify-center">
-                        <div class="text-amber-500 text-3xl mb-2 group-hover:scale-110 transition-transform"><i class="fas fa-microphone-alt"></i></div>
-                        <span class="text-sm font-bold text-slate-300 block mb-1">GRAVAR OU ENVIAR ÁUDIO DO RUÍDO</span>
-                        <span class="text-xs text-slate-500 block">(Opcional - Máx 3MB)</span>
-                    </label>
-                    <input type="file" id="audio-upload" accept="audio/*,video/*" class="hidden">
-                    <div id="audio-preview" class="hidden mt-3 w-full text-xs text-green-400 font-mono bg-slate-800 p-2 rounded truncate border border-green-900/50">
-                        <i class="fas fa-check-circle"></i> <span id="audio-filename">Áudio carregado!</span>
+                <div class="mb-4 bg-[#0f172a] border border-slate-700 rounded-xl p-4">
+                    <p class="text-xs font-bold text-slate-500 uppercase mb-3 text-center">Capture o som do defeito</p>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="relative group">
+                            <label for="audio-upload" class="cursor-pointer flex flex-col items-center justify-center bg-slate-800 hover:bg-slate-700 border border-slate-600 border-dashed rounded-lg p-4 transition-all h-full">
+                                <div class="text-slate-400 group-hover:text-white text-2xl mb-1"><i class="fas fa-upload"></i></div>
+                                <span class="text-xs font-bold text-slate-400 group-hover:text-white">ENVIAR ARQUIVO</span>
+                            </label>
+                            <input type="file" id="audio-upload" accept="audio/*" class="hidden">
+                        </div>
+
+                        <div id="record-btn-container" class="cursor-pointer flex flex-col items-center justify-center bg-slate-800 hover:bg-slate-700 border border-slate-600 border-dashed rounded-lg p-4 transition-all h-full">
+                            <div id="mic-icon" class="text-amber-500 text-2xl mb-1"><i class="fas fa-microphone"></i></div>
+                            <span id="record-text" class="text-xs font-bold text-amber-500">GRAVAR ÁUDIO</span>
+                        </div>
+                    </div>
+
+                    <div id="audio-feedback-container" class="hidden mt-4 bg-slate-900 rounded-lg p-3 border border-slate-700 flex flex-col items-center">
+                        <p id="audio-status-text" class="text-xs text-green-400 font-mono mb-2 flex items-center gap-2">
+                            <i class="fas fa-check-circle"></i> Áudio pronto para análise!
+                        </p>
+                        
+                        <audio id="audio-player" controls class="w-full h-8 mb-2 hidden"></audio>
+                        
+                        <button id="btn-clear-audio" class="text-xs text-red-400 hover:text-red-300 underline mt-1">Remover áudio</button>
+                    </div>
+
+                    <div id="recording-overlay" class="hidden mt-4 bg-red-900/20 border border-red-500/50 rounded-lg p-4 flex flex-col items-center animate-pulse">
+                        <p class="text-red-500 font-bold text-sm mb-2"><i class="fas fa-circle text-[10px] mr-2"></i> GRAVANDO...</p>
+                        <button id="btn-stop-record" class="bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg">
+                            PARAR GRAVAÇÃO
+                        </button>
                     </div>
                 </div>
 
