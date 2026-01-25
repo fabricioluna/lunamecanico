@@ -26,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnAnalisar) btnAnalisar.addEventListener('click', analisarComIA);
 });
 
-// Função visual para simular digitação
 async function typeWriterEffect(text: string, element: HTMLElement, container: HTMLElement) {
     const htmlContent = await marked.parse(text);
     element.innerHTML = `
@@ -53,7 +52,6 @@ async function analisarComIA() {
 
     if (!btn || !resContainer || !resTexto) return;
 
-    // --- COLETA DE DADOS ---
     const getVal = (id: string) => (document.getElementById(id) as HTMLInputElement)?.value || "";
     const getChecked = (name: string) => {
         const els = document.querySelectorAll(`input[name="${name}"]:checked`) as NodeListOf<HTMLInputElement>;
@@ -68,8 +66,9 @@ async function analisarComIA() {
         cambio: getVal('cambio')
     };
 
+    // Única validação obrigatória: Modelo
     if (!vehicle.modelo) {
-        alert("Por favor, informe o modelo do veículo.");
+        alert("Por favor, informe pelo menos o Modelo do veículo.");
         return;
     }
 
@@ -93,7 +92,7 @@ async function analisarComIA() {
         eletricaPartida: getChecked('eletrica_partida'),
         eletricaAcess: getChecked('eletrica_acess'),
         idadeBateria: getVal('idade-bateria'),
-        frequencia: (document.querySelector('input[name="frequencia"]:checked') as HTMLInputElement)?.value || "Intermitente",
+        frequencia: (document.querySelector('input[name="frequencia"]:checked') as HTMLInputElement)?.value || "Não informado",
         relato: (document.getElementById('relato') as HTMLTextAreaElement)?.value || "",
         extras: {
             luz: getVal('outra-luz'),
@@ -110,7 +109,6 @@ async function analisarComIA() {
         }
     };
 
-    // --- UI LOADING ---
     btn.disabled = true;
     const oldHtml = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-bolt fa-pulse"></i> SEU LUNA ESTÁ ANALISANDO...';
@@ -119,50 +117,47 @@ async function analisarComIA() {
     resContainer.classList.add('hidden');
 
     const prompt = `
-        Atue como o SEU LUNA, um Mecânico Especialista. 
-        Seu perfil é técnico, porém com uma linguagem simples, clara, objetiva e educativa.
-        Não use gírias excessivas. Foque na precisão técnica.
+        Atue como o SEU LUNA, um Mecânico Especialista Sênior. 
+        Perfil: Técnico, formal, linguagem clara, objetiva e educativa. Sem gírias excessivas.
         
-        DADOS TÉCNICOS DO VEÍCULO:
-        - Modelo: ${vehicle.modelo} | Ano: ${vehicle.ano} | KM: ${vehicle.km}
-        - Motor: ${vehicle.motor} | Câmbio: ${vehicle.cambio}
+        CONTEXTO (DADOS PARA ANÁLISE - NÃO REPITA ISSO NO RELATÓRIO FINAL):
+        Veículo: ${vehicle.modelo} | ${vehicle.ano} | ${vehicle.km} km | ${vehicle.motor} | ${vehicle.cambio}
+        Sintomas: ${sintomas.luzes} ${sintomas.motorComp} ${sintomas.dirSusp} ${sintomas.freios}
+        Ruídos: ${sintomas.ruidoTipo} em ${sintomas.ruidoOrigem} (${sintomas.rodaSpec})
+        Condições: ${sintomas.condicoes}
+        Histórico: ${sintomas.historico} (${sintomas.manutDetalhe})
+        Cheiros/Fluidos: ${sintomas.cheiros} ${sintomas.manchas} ${sintomas.niveis}
+        Transmissão/Elétrica: ${sintomas.manualComp} ${sintomas.autoComp} ${sintomas.eletricaPartida} ${sintomas.eletricaAcess} (Bateria ${sintomas.idadeBateria} anos)
+        Frequência: ${sintomas.frequencia}
+        Relato Cliente: "${sintomas.relato}"
+        Outros: ${Object.values(sintomas.extras).join(' ')}
 
-        SINTOMAS E OBSERVAÇÕES:
-        - Painel/Motor: ${sintomas.luzes}, ${sintomas.motorComp}. Fumaça: ${sintomas.corFumaca}. Obs: ${sintomas.extras.luz} ${sintomas.extras.motor}
-        - Direção/Freios: ${sintomas.dirSusp}, ${sintomas.freios}. Obs: ${sintomas.extras.direcao} ${sintomas.extras.freio}
-        - Ruídos: ${sintomas.ruidoTipo} em ${sintomas.ruidoOrigem} (${sintomas.rodaSpec}). Obs: ${sintomas.extras.ruido}
-        - Condições: ${sintomas.condicoes}. Obs: ${sintomas.extras.condicao}
-        - Histórico: ${sintomas.historico} (${sintomas.manutDetalhe}). Obs: ${sintomas.extras.historico}
-        - Cheiros: ${sintomas.cheiros}. Obs: ${sintomas.extras.cheiro}
-        - Fluidos: ${sintomas.manchas}. Níveis: ${sintomas.niveis}. Obs: ${sintomas.extras.fluido}
-        - Transmissão: ${sintomas.manualComp} ${sintomas.autoComp}. Obs: ${sintomas.extras.transmissao}
-        - Elétrica: Bateria ${sintomas.idadeBateria} anos. Partida: ${sintomas.eletricaPartida}. Acessórios: ${sintomas.eletricaAcess}. Obs: ${sintomas.extras.eletrica}
-        - Frequência: ${sintomas.frequencia}
+        DIRETRIZES DE RESPOSTA:
+        1. NÃO repita os dados do formulário (ex: "O usuário relatou..."). Vá direto para o diagnóstico.
+        2. Se houver POUCA informação, use seu conhecimento sobre DEFEITOS CRÔNICOS DESTE MODELO (${vehicle.modelo}) para criar a hipótese mais provável, mas ADICIONE UM AVISO CLARO de que o diagnóstico é preliminar por falta de dados.
+        3. A única informação garantida é a Marca/Modelo. O resto pode estar vazio; se estiver, ignore.
 
-        RELATO DO CONDUTOR: "${sintomas.relato}"
-
-        INSTRUÇÃO DE ESTRUTURA DO LAUDO (Markdown):
+        ESTRUTURA OBRIGATÓRIA (Markdown):
         ### 1. 🔧 Saudação Inicial
-        (Breve e cordial, confirmando o veículo).
+        (Breve e cordial).
 
         ### 2. 🎯 DIAGNÓSTICO PRINCIPAL
-        (Identifique o sistema e o defeito central com precisão).
+        (Seja completo e técnico. Identifique o sistema e o defeito central com precisão. Se os dados forem vagos, baseie-se na estatística de falhas desse modelo).
 
         ### 3. 🧠 ANÁLISE TÉCNICA
-        (Relacione os sintomas físicos, ruídos e luzes com o funcionamento mecânico. Evite termos vagos).
+        (Explique o raciocínio técnico de forma clara e objetiva. Relacione os sintomas com o funcionamento mecânico. Evite termos genéricos).
 
         ### 4. 📋 CAUSAS PROVÁVEIS
-        (Liste de 3 a 5 causas potenciais, ordenadas da MAIS PROVÁVEL para a MENOS PROVÁVEL).
+        (Liste de 3 a 5 causas. É OBRIGATÓRIO ordenar da MAIS PROVÁVEL para a MENOS PROVÁVEL).
 
         ### 5. 📝 RESUMO E CONCLUSÃO
-        (Parágrafo síntese claro para o mecânico e para o cliente).
+        (Um parágrafo síntese que sirva como comunicação universal: técnico o suficiente para o mecânico entender o que fazer, e claro o suficiente para o cliente entender a gravidade).
 
         ### 6. 🚨 NÍVEL DE URGÊNCIA
-        (Seguro Rodar, Atenção ou Parada Imediata).
+        (Seguro Rodar, Atenção ou Parada Imediata - Justifique).
     `;
 
     try {
-        // CHAMA APENAS O SEU BACKEND NA VERCEL
         const response = await fetch('/api/diagnostico', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -175,11 +170,8 @@ async function analisarComIA() {
             throw new Error(data.error || "Erro na resposta do servidor");
         }
 
-        const resultText = data.result;
-
-        // Exibe o resultado
         resContainer.classList.remove('hidden');
-        await typeWriterEffect(resultText, resTexto, resContainer);
+        await typeWriterEffect(data.result, resTexto, resContainer);
 
     } catch (e: any) {
         console.error("Erro detalhado:", e);
