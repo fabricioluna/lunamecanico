@@ -1,5 +1,7 @@
-import { GoogleGenAI } from "@google/genai";
 import { marked } from "marked";
+
+// Removemos a importação do GoogleGenAI daqui, pois quem chama o Google agora é a Vercel
+// import { GoogleGenAI } from "@google/genai"; 
 
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form') as HTMLFormElement;
@@ -27,6 +29,30 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnAnalisar) btnAnalisar.addEventListener('click', analisarComIA);
 });
 
+// Função para simular o efeito de digitação (Streaming visual)
+async function typeWriterEffect(text: string, element: HTMLElement, container: HTMLElement) {
+    // Converte o Markdown para HTML primeiro
+    const htmlContent = await marked.parse(text);
+    
+    // Injeta o HTML básico com estilos, mas escondido inicialmente
+    element.innerHTML = `
+        <div class="prose prose-invert max-w-none text-justify leading-relaxed space-y-4 fade-in-text">
+            <style>
+                .prose h3 { color: #f59e0b; margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.25rem; font-weight: 700; border-bottom: 1px solid #f59e0b55; padding-bottom: 0.25rem; }
+                .prose p { margin-bottom: 1rem; color: #cbd5e1; }
+                .prose strong { color: #fff; font-weight: 700; }
+                .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
+                .prose li { margin-bottom: 0.5rem; color: #cbd5e1; }
+                .fade-in-text { animation: fadeIn 0.5s ease-in; }
+            </style>
+            ${htmlContent}
+        </div>
+    `;
+    
+    // Scroll para o resultado
+    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 async function analisarComIA() {
     const btn = document.getElementById('btn-analisar') as HTMLButtonElement;
     const resContainer = document.getElementById('resultado-container');
@@ -34,7 +60,7 @@ async function analisarComIA() {
 
     if (!btn || !resContainer || !resTexto) return;
 
-    // Funções auxiliares
+    // --- COLETA DE DADOS ---
     const getVal = (id: string) => (document.getElementById(id) as HTMLInputElement)?.value || "";
     const getChecked = (name: string) => {
         const els = document.querySelectorAll(`input[name="${name}"]:checked`) as NodeListOf<HTMLInputElement>;
@@ -54,7 +80,6 @@ async function analisarComIA() {
         return;
     }
 
-    // Coleta COMPLETA de dados + "Outros"
     const sintomas = {
         luzes: getChecked('luzes'),
         motorComp: getChecked('motor_comp'),
@@ -77,7 +102,6 @@ async function analisarComIA() {
         idadeBateria: getVal('idade-bateria'),
         frequencia: (document.querySelector('input[name="frequencia"]:checked') as HTMLInputElement)?.value || "Intermitente",
         relato: (document.getElementById('relato') as HTMLTextAreaElement)?.value || "",
-        // Captura dos campos "Outros"
         extras: {
             luz: getVal('outra-luz'),
             motor: getVal('outro-motor'),
@@ -93,13 +117,14 @@ async function analisarComIA() {
         }
     };
 
+    // --- UI LOADING ---
     btn.disabled = true;
     const oldHtml = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-bolt fa-pulse"></i> SEU LUNA ESTÁ ESCREVENDO...';
-
-    // Limpa e exibe container
+    btn.innerHTML = '<i class="fas fa-bolt fa-pulse"></i> SEU LUNA ESTÁ PENSANDO...';
+    
+    // Limpa anterior
     resTexto.innerHTML = "";
-    resContainer.classList.remove('hidden');
+    resContainer.classList.add('hidden');
 
     const prompt = `
         Atue como o SEU LUNA, um mecânico lendário de 40 anos de praça. Sincero, técnico e gente boa.
@@ -141,43 +166,31 @@ async function analisarComIA() {
     `;
 
     try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-        
-        const response = await ai.models.generateContentStream({
-            model: "gemini-2.5-flash-preview-09-2025",
-            contents: [{ role: 'user', parts: [{ text: prompt }] }]
+        // CONEXÃO COM SUA API NA VERCEL
+        // Substituímos a chamada direta ao Google por uma chamada ao seu backend
+        const response = await fetch('/api/diagnostico', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: prompt })
         });
 
-        let accumulatedText = "";
+        const data = await response.json();
 
-        for await (const chunk of response.stream) {
-            const chunkText = chunk.text();
-            if (chunkText) {
-                accumulatedText += chunkText;
-                resTexto.innerHTML = `
-                    <div class="prose prose-invert max-w-none text-justify leading-relaxed space-y-4">
-                        <style>
-                            .prose h3 { color: #f59e0b; margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.25rem; font-weight: 700; border-bottom: 1px solid #f59e0b55; padding-bottom: 0.25rem; }
-                            .prose p { margin-bottom: 1rem; color: #cbd5e1; }
-                            .prose strong { color: #fff; font-weight: 700; }
-                            .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
-                            .prose li { margin-bottom: 0.5rem; color: #cbd5e1; }
-                        </style>
-                        ${await marked.parse(accumulatedText)}
-                    </div>
-                `;
-                resContainer.scrollIntoView({ behavior: 'smooth', block: 'end' });
-            }
+        if (!response.ok || data.error) {
+            throw new Error(data.error || "Erro na resposta do servidor");
         }
-        resContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        const resultText = data.result;
+
+        // Exibe o container
+        resContainer.classList.remove('hidden');
+        
+        // Aplica o efeito visual e formatação
+        await typeWriterEffect(resultText, resTexto, resContainer);
 
     } catch (e: any) {
         console.error("Erro detalhado:", e);
-        let msg = "Ocorreu um erro ao falar com o Seu Luna. Verifique sua conexão.";
-        if (e.message?.includes("API key not valid")) {
-            msg = "Erro: Chave da API inválida.";
-        }
-        alert(msg);
+        alert("Ocorreu um erro ao falar com o Seu Luna. Tente novamente em instantes.");
         resContainer.classList.add('hidden');
     } finally {
         btn.disabled = false;
