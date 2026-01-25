@@ -1,9 +1,7 @@
-/* Fonte Inter */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap');
 
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #0f172a; /* Fundo geral */
 }
 
 .fade-in {
@@ -15,11 +13,7 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* =========================================
-   COMPONENTES PERSONALIZADOS LUNA
-   ========================================= */
-
-/* Cards Principais */
+/* --- Componentes --- */
 .luna-card {
     background-color: #1e293b;
     border: 1px solid #334155;
@@ -28,12 +22,11 @@ body {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-/* Títulos */
 .section-title {
-    color: #f59e0b; /* Amber 500 */
+    color: #f59e0b;
     font-weight: 800;
     text-transform: uppercase;
-    font-size: 0.875rem;
+    font-size: 0.9rem;
     letter-spacing: 0.05em;
     margin-bottom: 1rem;
     display: flex;
@@ -49,11 +42,10 @@ body {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    margin-top: 1rem;
+    margin-top: 1.25rem;
     margin-bottom: 0.5rem;
 }
 
-/* Inputs */
 .input-label {
     font-size: 0.7rem;
     font-weight: 700;
@@ -80,18 +72,11 @@ body {
     box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
 }
 
-.luna-input::placeholder {
-    color: #475569;
-}
-
-/* =========================================
-   CHECKBOXES ESTILO CARD (BOTOES)
-   ========================================= */
+/* --- Checkboxes Estilizados --- */
 .sintoma-card {
     cursor: pointer;
     user-select: none;
     display: block;
-    height: 100%;
 }
 
 .card-content {
@@ -106,50 +91,25 @@ body {
     align-items: center;
     gap: 0.5rem;
     transition: all 0.2s;
-    height: 100%; /* Garante altura igual no grid */
+    min-height: 50px;
 }
 
 .sintoma-card:hover .card-content {
     border-color: #64748b;
 }
 
-/* -------------------------------------------------------
-   AQUI ESTÁ A CORREÇÃO:
-   Lista de todas as classes que devem acender quando marcadas
-   -------------------------------------------------------
-*/
-.sintoma:checked + .card-content,
-.ruido:checked + .card-content,
-.condicao:checked + .card-content,
-.historico:checked + .card-content,
-.cheiro:checked + .card-content,
-.fluido:checked + .card-content,
-.transmissao:checked + .card-content,
-.eletrica:checked + .card-content,
-.gatilho:checked + .card-content {
-    background-color: rgba(245, 158, 11, 0.15); /* Fundo ambar leve */
-    border-color: #f59e0b; /* Borda laranja */
-    color: #f59e0b; /* Texto laranja */
-    box-shadow: 0 0 0 1px #f59e0b; /* Brilho extra na borda */
-}
-
-/* Ícones dentro dos cards ficam sólidos quando selecionados */
-.sintoma:checked + .card-content i,
-.ruido:checked + .card-content i,
-.condicao:checked + .card-content i,
-.historico:checked + .card-content i,
-.cheiro:checked + .card-content i,
-.fluido:checked + .card-content i,
-.transmissao:checked + .card-content i,
-.eletrica:checked + .card-content i {
-    font-weight: 900;
+/* Estado Selecionado (Serve para todos os inputs dentro de .sintoma-card) */
+.sintoma-card input:checked + .card-content {
+    background-color: rgba(245, 158, 11, 0.15);
+    border-color: #f59e0b;
+    color: #f59e0b;
+    box-shadow: 0 0 0 1px #f59e0b;
 }
 
 /* Abas de Frequência */
 .freq-tab {
     cursor: pointer;
 }
-
 .tab-content {
     text-align: center;
     padding: 0.5rem;
@@ -159,66 +119,20 @@ body {
     color: #94a3b8;
     transition: all 0.2s;
 }
-
-.freq-tab:hover .tab-content {
-    color: white;
+.freq-tab input:checked + .tab-content {
+    color: #0f172a; /* Texto escuro no fundo laranja */
 }
 
-/* Scrollbar Personalizada */
-::-webkit-scrollbar {
-    width: 8px;
-}
-::-webkit-scrollbar-track {
-    background: #0f172a;
-}
-::-webkit-scrollbar-thumb {
-    background: #334155;
-    border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-    background: #f59e0b;
-}
-/* =========================================
-   CONFIGURAÇÃO DE IMPRESSÃO (PRINT)
-   ========================================= */
+/* --- Configuração de Impressão --- */
 @media print {
-    /* 1. Esconde TUDO na página por padrão */
-    body * {
-        visibility: hidden;
-    }
-
-    /* 2. Torna visível apenas a área do relatório */
-    #resultado-container, 
-    #resultado-container * {
-        visibility: visible;
-    }
-
-    /* 3. Posiciona o relatório no topo da folha e remove estilos "Dark Mode" para economizar tinta */
+    body * { visibility: hidden; }
+    #resultado-container, #resultado-container * { visibility: visible; }
     #resultado-container {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        margin: 0;
-        padding: 20px;
-        background-color: white !important; /* Fundo branco */
-        color: black !important; /* Texto preto */
-        border: none !important;
-        box-shadow: none !important;
+        position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 20px;
+        background-color: white !important; color: black !important;
+        border: none !important; box-shadow: none !important;
     }
-
-    /* 4. Esconde os botões de ação (Imprimir/Novo) para não saírem no papel */
-    #resultado-container button {
-        display: none !important;
-    }
-
-    /* 5. Força a cor dos textos e títulos para preto (melhor leitura no papel) */
-    .prose, .prose p, .prose li, .prose strong {
-        color: black !important;
-    }
-    
-    .prose h3 {
-        color: black !important;
-        border-bottom: 2px solid black !important;
-    }
+    #resultado-container button { display: none !important; }
+    .prose, .prose p, .prose li, .prose strong { color: black !important; }
+    .prose h3 { color: black !important; border-bottom: 2px solid black !important; }
 }
