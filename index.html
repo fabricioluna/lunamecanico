@@ -105,10 +105,8 @@
                     <label class="sintoma-card"><input type="checkbox" name="ruido_origem" value="Frente/Motor" class="hidden"><div class="card-content">Frente/Motor</div></label>
                     <label class="sintoma-card"><input type="checkbox" name="ruido_origem" value="Rodas" class="hidden"><div class="card-content">Rodas</div></label>
                 </div>
-                
                 <div class="mb-4 bg-[#0f172a] border border-slate-700 rounded-xl p-4">
                     <p class="text-xs font-bold text-slate-500 uppercase mb-3 text-center">Capture o som do defeito</p>
-                    
                     <div class="grid grid-cols-2 gap-4">
                         <div class="relative group">
                             <label for="audio-upload" class="cursor-pointer flex flex-col items-center justify-center bg-slate-800 hover:bg-slate-700 border border-slate-600 border-dashed rounded-lg p-4 transition-all h-full">
@@ -117,65 +115,41 @@
                             </label>
                             <input type="file" id="audio-upload" accept="audio/*" class="hidden">
                         </div>
-
                         <div id="record-btn-container" class="cursor-pointer flex flex-col items-center justify-center bg-slate-800 hover:bg-slate-700 border border-slate-600 border-dashed rounded-lg p-4 transition-all h-full">
                             <div id="mic-icon" class="text-amber-500 text-2xl mb-1"><i class="fas fa-microphone"></i></div>
                             <span id="record-text" class="text-xs font-bold text-amber-500">GRAVAR ÁUDIO</span>
                         </div>
                     </div>
-
                     <div id="audio-feedback-container" class="hidden mt-4 bg-slate-900 rounded-lg p-3 border border-slate-700 flex flex-col items-center">
                         <p id="audio-status-text" class="text-xs text-green-400 font-mono mb-2 flex items-center gap-2">
                             <i class="fas fa-check-circle"></i> Áudio pronto para análise!
                         </p>
-                        
                         <audio id="audio-player" controls class="w-full h-8 mb-2 hidden"></audio>
-                        
                         <button id="btn-clear-audio" class="text-xs text-red-400 hover:text-red-300 underline mt-1">Remover áudio</button>
                     </div>
-
                     <div id="recording-overlay" class="hidden mt-4 bg-red-900/20 border border-red-500/50 rounded-lg p-4 flex flex-col items-center animate-pulse">
                         <p class="text-red-500 font-bold text-sm mb-2"><i class="fas fa-circle text-[10px] mr-2"></i> GRAVANDO...</p>
-                        <button id="btn-stop-record" class="bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg">
-                            PARAR GRAVAÇÃO
-                        </button>
+                        <button id="btn-stop-record" class="bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg">PARAR GRAVAÇÃO</button>
                     </div>
                 </div>
-
                 <input type="text" id="especificacao-roda" class="luna-input mb-2" placeholder="Se for na roda, qual delas?">
                 <input type="text" id="outro-ruido" class="luna-input mb-6" placeholder="Outros ruídos ou locais...">
             </div>
 
             <div class="luna-card mb-8"><h3 class="section-title"><i class="fas fa-stopwatch"></i> 4. QUANDO ACONTECE?</h3><div class="grid grid-cols-2 gap-3 mb-2"><label class="sintoma-card"><input type="checkbox" name="cond_contexto" value="Motor Frio" class="hidden"><div class="card-content">Só Frio</div></label><label class="sintoma-card"><input type="checkbox" name="cond_contexto" value="Motor Quente" class="hidden"><div class="card-content">Só Quente</div></label><label class="sintoma-card"><input type="checkbox" name="cond_contexto" value="Marcha Lenta" class="hidden"><div class="card-content">Marcha Lenta</div></label><label class="sintoma-card"><input type="checkbox" name="cond_contexto" value="Ao Acelerar" class="hidden"><div class="card-content">Ao Acelerar</div></label><label class="sintoma-card"><input type="checkbox" name="cond_contexto" value="Buracos/Lombada" class="hidden"><div class="card-content">Buracos</div></label></div><input type="text" id="outra-condicao" class="luna-input mb-6" placeholder="Outras situações..."></div>
-            
             <div class="luna-card mb-8"><h3 class="section-title"><i class="fas fa-history"></i> 5. HISTÓRICO RECENTE</h3><div class="grid grid-cols-1 gap-3 mb-2"><label class="sintoma-card w-full"><input type="checkbox" name="historico" value="Abastecimento Suspeito" class="hidden"><div class="card-content">Abasteceu em posto desconhecido?</div></label><label class="sintoma-card w-full"><input type="checkbox" name="historico" value="Carro Parado" class="hidden"><div class="card-content">Carro parado há mais de 15 dias?</div></label></div><input type="text" id="detalhe-manutencao" class="luna-input mb-2" placeholder="Fez manutenção recente? O que trocou?"><input type="text" id="outro-historico" class="luna-input mb-6" placeholder="Outro detalhe histórico..."></div>
-            
             <div class="luna-card mb-8"><h3 class="section-title"><i class="fas fa-wind"></i> 6. CHEIROS</h3><div class="grid grid-cols-2 gap-3 mb-2"><label class="sintoma-card"><input type="checkbox" name="cheiros" value="Combustível" class="hidden"><div class="card-content">Combustível</div></label><label class="sintoma-card"><input type="checkbox" name="cheiros" value="Queimado" class="hidden"><div class="card-content">Queimado</div></label><label class="sintoma-card"><input type="checkbox" name="cheiros" value="Ovo Podre" class="hidden"><div class="card-content">Ovo Podre</div></label></div><input type="text" id="outro-cheiro" class="luna-input mb-6" placeholder="Outros cheiros..."></div>
-            
             <div class="luna-card mb-8"><h3 class="section-title"><i class="fas fa-tint"></i> 7. FLUIDOS E VAZAMENTOS</h3><div class="grid grid-cols-2 gap-3 mb-2"><label class="sintoma-card"><input type="checkbox" name="manchas" value="Mancha Preta (Óleo)" class="hidden"><div class="card-content">Óleo (Preto)</div></label><label class="sintoma-card"><input type="checkbox" name="manchas" value="Mancha Rosa/Verde (Água)" class="hidden"><div class="card-content">Água (Rosa/Verde)</div></label><label class="sintoma-card"><input type="checkbox" name="niveis" value="Nível Óleo Baixo" class="hidden"><div class="card-content">Nível Óleo Baixo</div></label><label class="sintoma-card"><input type="checkbox" name="niveis" value="Nível Água Baixo" class="hidden"><div class="card-content">Nível Água Baixo</div></label></div><input type="text" id="outro-fluido" class="luna-input mb-6" placeholder="Outros vazamentos..."></div>
-            
             <div class="luna-card mb-8"><h3 class="section-title"><i class="fas fa-cogs"></i> 8. CÂMBIO / EMBREAGEM</h3><div class="grid grid-cols-2 gap-3 mb-2"><label class="sintoma-card"><input type="checkbox" name="manual_comp" value="Arranhando" class="hidden"><div class="card-content">Arranhando</div></label><label class="sintoma-card"><input type="checkbox" name="manual_comp" value="Pedal Duro" class="hidden"><div class="card-content">Pedal Duro</div></label><label class="sintoma-card"><input type="checkbox" name="auto_comp" value="Tranco" class="hidden"><div class="card-content">Trancos (Auto)</div></label><label class="sintoma-card"><input type="checkbox" name="auto_comp" value="Patina/Demora" class="hidden"><div class="card-content">Patina/Demora</div></label></div><input type="text" id="outra-transmissao" class="luna-input mb-6" placeholder="Outros problemas no câmbio..."></div>
-            
             <div class="luna-card mb-8"><h3 class="section-title"><i class="fas fa-bolt"></i> 9. ELÉTRICA</h3><input type="number" id="idade-bateria" class="luna-input mb-4" placeholder="Idade da Bateria (anos)"><div class="grid grid-cols-2 gap-3 mb-2"><label class="sintoma-card"><input type="checkbox" name="eletrica_partida" value="Partida Pesada" class="hidden"><div class="card-content">Partida Pesada</div></label><label class="sintoma-card"><input type="checkbox" name="eletrica_acess" value="Vidro Lento" class="hidden"><div class="card-content">Vidro Lento</div></label><label class="sintoma-card"><input type="checkbox" name="eletrica_acess" value="Ar não gela" class="hidden"><div class="card-content">Ar não gela</div></label></div><input type="text" id="outra-eletrica" class="luna-input mb-6" placeholder="Outros problemas elétricos..."></div>
-
             <div class="luna-card mb-8">
                 <h3 class="section-title"><i class="fas fa-calendar-alt"></i> 10. FREQUÊNCIA</h3>
                 <div class="grid grid-cols-3 gap-2 bg-[#0f172a] p-1 rounded-lg border border-slate-700">
-                    <label class="freq-tab">
-                        <input type="radio" name="frequencia" value="Constante" class="hidden peer" checked>
-                        <div class="tab-content peer-checked:bg-amber-500 peer-checked:text-slate-900">Constante</div>
-                    </label>
-                    <label class="freq-tab">
-                        <input type="radio" name="frequencia" value="Intermitente" class="hidden peer">
-                        <div class="tab-content peer-checked:bg-amber-500 peer-checked:text-slate-900">Intermitente</div>
-                    </label>
-                    <label class="freq-tab">
-                        <input type="radio" name="frequencia" value="Uma vez" class="hidden peer">
-                        <div class="tab-content peer-checked:bg-amber-500 peer-checked:text-slate-900">Uma vez</div>
-                    </label>
+                    <label class="freq-tab"><input type="radio" name="frequencia" value="Constante" class="hidden peer" checked><div class="tab-content peer-checked:bg-amber-500 peer-checked:text-slate-900">Constante</div></label>
+                    <label class="freq-tab"><input type="radio" name="frequencia" value="Intermitente" class="hidden peer"><div class="tab-content peer-checked:bg-amber-500 peer-checked:text-slate-900">Intermitente</div></label>
+                    <label class="freq-tab"><input type="radio" name="frequencia" value="Uma vez" class="hidden peer"><div class="tab-content peer-checked:bg-amber-500 peer-checked:text-slate-900">Uma vez</div></label>
                 </div>
             </div>
-
             <div class="luna-card mb-8">
                 <h3 class="section-title"><i class="fas fa-tools"></i> 11. TENTATIVAS DE SOLUÇÃO</h3>
                 <div class="mb-2">
@@ -185,8 +159,32 @@
             </div>
 
             <div class="luna-card mb-10">
-                <h3 class="section-title"><i class="fas fa-edit"></i> RESUMO DO MOTORISTA</h3>
-                <textarea id="relato" rows="4" class="luna-input w-full" placeholder="Descreva com suas palavras..."></textarea>
+                <h3 class="section-title"><i class="fas fa-edit"></i> RESUMO E MÍDIAS</h3>
+                <p class="text-sm text-slate-500 mb-3">Descreva o problema ou envie fotos/vídeos/áudios para o Seu Luna ver e ouvir.</p>
+                
+                <textarea id="relato" rows="4" class="luna-input w-full mb-4" placeholder="Descreva com suas palavras o que está acontecendo..."></textarea>
+                
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <label class="cursor-pointer bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl p-4 flex flex-col items-center justify-center transition-all">
+                        <i class="fas fa-paperclip text-amber-500 text-xl mb-1"></i>
+                        <span class="text-xs font-bold text-slate-300">ANEXAR MÍDIA</span>
+                        <span class="text-[10px] text-slate-500">Fotos, Vídeos, Áudios</span>
+                        <input type="file" id="driver-media-upload" multiple accept="image/*,video/*,audio/*" class="hidden">
+                    </label>
+
+                    <button id="driver-record-btn" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl p-4 flex flex-col items-center justify-center transition-all relative overflow-hidden">
+                        <i class="fas fa-microphone text-amber-500 text-xl mb-1"></i>
+                        <span id="driver-record-text" class="text-xs font-bold text-slate-300">GRAVAR EXPLICAÇÃO</span>
+                        <span class="text-[10px] text-slate-500">Fale sobre o problema</span>
+                        <div id="driver-recording-indicator" class="hidden absolute inset-0 bg-red-900/80 flex items-center justify-center gap-2">
+                            <div class="w-3 h-3 bg-red-500 rounded-full animate-ping"></div>
+                            <span class="font-bold text-white text-xs">GRAVANDO... (Clique p/ Parar)</span>
+                        </div>
+                    </button>
+                </div>
+
+                <div id="driver-media-list" class="space-y-2">
+                    </div>
             </div>
 
             <button id="btn-analisar" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-900 font-extrabold text-xl py-5 rounded-2xl shadow-xl transition-transform transform active:scale-95 flex items-center justify-center gap-3 mb-16">
@@ -194,32 +192,25 @@
             </button>
 
             <div id="resultado-container" class="hidden bg-[#1e293b] border border-amber-500/50 rounded-2xl p-8 mb-16 shadow-2xl relative overflow-hidden print:border-none print:shadow-none print:p-0 print:overflow-visible">
-                
                 <div class="print-header hidden print:block absolute top-0 right-0 mb-8">
                     <img src="logo4.png" alt="Luna Autopeças" class="h-16 w-auto object-contain print:filter-none">
                 </div>
-
                 <div class="absolute top-0 left-0 w-full h-2 bg-amber-500 print:hidden"></div>
-                
                 <h3 class="text-2xl font-bold text-white mb-6 flex items-center gap-3 print:text-black print:mt-20 print:mb-8">
                     <i class="fas fa-clipboard-check text-green-400 text-3xl print:hidden"></i> 
                     DIAGNÓSTICO DO SEU LUNA
                 </h3>
-                
                 <div id="resultado-texto" class="prose prose-invert max-w-none text-slate-300 leading-relaxed print:text-black"></div>
-                
                 <div class="print-footer hidden print:flex flex-col items-center justify-center mt-12 pt-6 border-t border-slate-200 text-center text-sm text-slate-600 break-inside-avoid">
                     <img src="logo3.png" alt="Luna Autopeças" class="h-12 mb-2 object-contain grayscale opacity-70">
                     <p class="font-semibold">Desenvolvido por Fabrício Luna</p>
                 </div>
-
                 <div class="mt-8 pt-6 border-t border-slate-700 flex gap-4 print:hidden">
                     <button onclick="window.print()" class="bg-slate-700 text-white px-6 py-3 rounded-lg hover:bg-slate-600 font-bold">Imprimir</button>
                     <button onclick="location.reload()" class="bg-slate-800 border border-slate-600 text-white px-6 py-3 rounded-lg hover:bg-slate-700 font-bold">Novo</button>
                 </div>
             </div>
         </div>
-
         <div class="mt-8 pb-8 flex flex-col items-center opacity-80">
             <img src="logo.png" alt="Luna Autopeças" class="h-12 mb-4">
             <p class="text-xs text-slate-500 font-medium">@ Luna Autopeças e Serviços - Desenvolvido por <span class="text-amber-500">Fabrício Luna</span></p>
