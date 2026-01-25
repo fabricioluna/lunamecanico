@@ -26,12 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnAnalisar) btnAnalisar.addEventListener('click', analisarComIA);
 });
 
-// Função para simular o efeito de digitação (Visual, já que o backend Vercel entrega tudo de uma vez)
+// Função visual para simular digitação
 async function typeWriterEffect(text: string, element: HTMLElement, container: HTMLElement) {
-    // 1. Converte Markdown para HTML
     const htmlContent = await marked.parse(text);
-    
-    // 2. Injeta o HTML com uma animação CSS de "fade-in"
     element.innerHTML = `
         <div class="prose prose-invert max-w-none text-justify leading-relaxed space-y-4 fade-in-text">
             <style>
@@ -40,15 +37,12 @@ async function typeWriterEffect(text: string, element: HTMLElement, container: H
                 .prose strong { color: #fff; font-weight: 700; }
                 .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
                 .prose li { margin-bottom: 0.5rem; color: #cbd5e1; }
-                /* Animação suave para aparecer o texto */
                 .fade-in-text { animation: fadeIn 0.8s ease-out; }
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
             </style>
             ${htmlContent}
         </div>
     `;
-    
-    // 3. Rola a tela suavemente para o resultado
     container.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -121,11 +115,9 @@ async function analisarComIA() {
     const oldHtml = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-bolt fa-pulse"></i> SEU LUNA ESTÁ ANALISANDO...';
     
-    // Limpa resultado anterior
     resTexto.innerHTML = "";
     resContainer.classList.add('hidden');
 
-    // --- NOVO PROMPT AJUSTADO ---
     const prompt = `
         Atue como o SEU LUNA, um Mecânico Especialista Sênior. 
         Seu perfil é altamente técnico, formal, porém com uma linguagem clara, objetiva e educativa.
@@ -135,43 +127,42 @@ async function analisarComIA() {
         - Modelo: ${vehicle.modelo} | Ano: ${vehicle.ano} | KM: ${vehicle.km}
         - Motor: ${vehicle.motor} | Câmbio: ${vehicle.cambio}
 
-        SINTOMAS E OBSERVAÇÕES COLETADAS:
-        - Painel e Motor: ${sintomas.luzes}, ${sintomas.motorComp}. Fumaça: ${sintomas.corFumaca}. Obs: ${sintomas.extras.luz} ${sintomas.extras.motor}
+        SINTOMAS E OBSERVAÇÕES:
+        - Painel/Motor: ${sintomas.luzes}, ${sintomas.motorComp}. Fumaça: ${sintomas.corFumaca}. Obs: ${sintomas.extras.luz} ${sintomas.extras.motor}
         - Direção/Freios: ${sintomas.dirSusp}, ${sintomas.freios}. Obs: ${sintomas.extras.direcao} ${sintomas.extras.freio}
-        - Ruídos: Tipo: ${sintomas.ruidoTipo}. Origem: ${sintomas.ruidoOrigem} (${sintomas.rodaSpec}). Obs: ${sintomas.extras.ruido}
-        - Condições de Ocorrência: ${sintomas.condicoes}. Obs: ${sintomas.extras.condicao}
+        - Ruídos: ${sintomas.ruidoTipo} em ${sintomas.ruidoOrigem} (${sintomas.rodaSpec}). Obs: ${sintomas.extras.ruido}
+        - Condições: ${sintomas.condicoes}. Obs: ${sintomas.extras.condicao}
         - Histórico: ${sintomas.historico} (${sintomas.manutDetalhe}). Obs: ${sintomas.extras.historico}
         - Cheiros: ${sintomas.cheiros}. Obs: ${sintomas.extras.cheiro}
-        - Fluidos: Manchas: ${sintomas.manchas}. Níveis: ${sintomas.niveis}. Obs: ${sintomas.extras.fluido}
-        - Transmissão: Manual: ${sintomas.manualComp}. Auto: ${sintomas.autoComp}. Obs: ${sintomas.extras.transmissao}
+        - Fluidos: ${sintomas.manchas}. Níveis: ${sintomas.niveis}. Obs: ${sintomas.extras.fluido}
+        - Transmissão: ${sintomas.manualComp} ${sintomas.autoComp}. Obs: ${sintomas.extras.transmissao}
         - Elétrica: Bateria ${sintomas.idadeBateria} anos. Partida: ${sintomas.eletricaPartida}. Acessórios: ${sintomas.eletricaAcess}. Obs: ${sintomas.extras.eletrica}
         - Frequência: ${sintomas.frequencia}
 
         RELATO DO CONDUTOR: "${sintomas.relato}"
 
         INSTRUÇÃO DE ESTRUTURA DO LAUDO (Markdown):
-        
         ### 1. 🔧 Saudação Inicial
-        (Breve e cordial, confirmando o veículo analisado).
+        (Breve e cordial, confirmando o veículo).
 
         ### 2. 🎯 DIAGNÓSTICO PRINCIPAL
-        (Seja completo e técnico. Identifique o sistema e o defeito central com precisão).
+        (Identifique o sistema e o defeito central com precisão).
 
         ### 3. 🧠 ANÁLISE TÉCNICA
-        (Explique o raciocínio técnico de forma clara. Relacione os sintomas físicos, ruídos e luzes com o funcionamento mecânico do carro. Evite termos vagos).
+        (Relacione os sintomas físicos, ruídos e luzes com o funcionamento mecânico. Evite termos vagos).
 
         ### 4. 📋 CAUSAS PROVÁVEIS
-        (Liste de 3 a 5 causas potenciais. É OBRIGATÓRIO ordenar da MAIS PROVÁVEL para a MENOS PROVÁVEL. Detalhe o componente específico).
+        (Liste de 3 a 5 causas potenciais, ordenadas da MAIS PROVÁVEL para a MENOS PROVÁVEL).
 
         ### 5. 📝 RESUMO E CONCLUSÃO
-        (Escreva um parágrafo síntese que sirva como comunicação universal: deve ser técnico o suficiente para o mecânico entender o que fazer, e claro o suficiente para o cliente entender o problema).
+        (Parágrafo síntese claro para o mecânico e para o cliente).
 
         ### 6. 🚨 NÍVEL DE URGÊNCIA
-        (Defina se é Seguro Rodar, Atenção ou Parada Imediata, justificando o risco técnico).
+        (Seguro Rodar, Atenção ou Parada Imediata).
     `;
 
     try {
-        // --- CONEXÃO CORRETA COM VERCEL ---
+        // CHAMA APENAS O SEU BACKEND NA VERCEL
         const response = await fetch('/api/diagnostico', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -186,10 +177,8 @@ async function analisarComIA() {
 
         const resultText = data.result;
 
-        // Exibe o container
+        // Exibe o resultado
         resContainer.classList.remove('hidden');
-        
-        // Aplica o efeito visual (que substitui o streaming real neste caso)
         await typeWriterEffect(resultText, resTexto, resContainer);
 
     } catch (e: any) {
