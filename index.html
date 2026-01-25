@@ -69,8 +69,29 @@
             <div class="luna-card mb-8"><h3 class="section-title"><i class="fas fa-tint"></i> 7. FLUIDOS E VAZAMENTOS</h3><div class="grid grid-cols-2 gap-3 mb-2"><label class="sintoma-card"><input type="checkbox" name="manchas" value="Mancha Preta (Óleo)" class="hidden"><div class="card-content">Óleo (Preto)</div></label><label class="sintoma-card"><input type="checkbox" name="manchas" value="Mancha Rosa/Verde (Água)" class="hidden"><div class="card-content">Água (Rosa/Verde)</div></label><label class="sintoma-card"><input type="checkbox" name="niveis" value="Nível Óleo Baixo" class="hidden"><div class="card-content">Nível Óleo Baixo</div></label><label class="sintoma-card"><input type="checkbox" name="niveis" value="Nível Água Baixo" class="hidden"><div class="card-content">Nível Água Baixo</div></label></div><input type="text" id="outro-fluido" class="luna-input mb-6" placeholder="Outros vazamentos..."></div>
             <div class="luna-card mb-8"><h3 class="section-title"><i class="fas fa-cogs"></i> 8. CÂMBIO / EMBREAGEM</h3><div class="grid grid-cols-2 gap-3 mb-2"><label class="sintoma-card"><input type="checkbox" name="manual_comp" value="Arranhando" class="hidden"><div class="card-content">Arranhando</div></label><label class="sintoma-card"><input type="checkbox" name="manual_comp" value="Pedal Duro" class="hidden"><div class="card-content">Pedal Duro</div></label><label class="sintoma-card"><input type="checkbox" name="auto_comp" value="Tranco" class="hidden"><div class="card-content">Trancos (Auto)</div></label><label class="sintoma-card"><input type="checkbox" name="auto_comp" value="Patina/Demora" class="hidden"><div class="card-content">Patina/Demora</div></label></div><input type="text" id="outra-transmissao" class="luna-input mb-6" placeholder="Outros problemas no câmbio..."></div>
             <div class="luna-card mb-8"><h3 class="section-title"><i class="fas fa-bolt"></i> 9. ELÉTRICA</h3><input type="number" id="idade-bateria" class="luna-input mb-4" placeholder="Idade da Bateria (anos)"><div class="grid grid-cols-2 gap-3 mb-2"><label class="sintoma-card"><input type="checkbox" name="eletrica_partida" value="Partida Pesada" class="hidden"><div class="card-content">Partida Pesada</div></label><label class="sintoma-card"><input type="checkbox" name="eletrica_acess" value="Vidro Lento" class="hidden"><div class="card-content">Vidro Lento</div></label><label class="sintoma-card"><input type="checkbox" name="eletrica_acess" value="Ar não gela" class="hidden"><div class="card-content">Ar não gela</div></label></div><input type="text" id="outra-eletrica" class="luna-input mb-6" placeholder="Outros problemas elétricos..."></div>
-            <div class="luna-card mb-8"><h3 class="section-title"><i class="fas fa-calendar-alt"></i> 10. FREQUÊNCIA</h3><div class="grid grid-cols-3 gap-2 bg-[#0f172a] p-1 rounded-lg border border-slate-700"><label class="freq-tab"><input type="radio" name="frequencia" value="Constante" class="hidden peer"><div class="tab-content peer-checked:bg-amber-500 peer-checked:text-slate-900">Constante</div></label><label class="freq-tab"><input type="radio" name="frequencia" value="Intermitente" class="hidden peer" checked><div class="tab-content peer-checked:bg-amber-500 peer-checked:text-slate-900">Intermitente</div></label><label class="freq-tab"><input type="radio" name="frequencia" value="Uma vez" class="hidden peer"><div class="tab-content peer-checked:bg-amber-500 peer-checked:text-slate-900">Uma vez</div></label></div></div>
-            <div class="luna-card mb-10"><h3 class="section-title"><i class="fas fa-edit"></i> RESUMO DO MOTORISTA</h3><textarea id="relato" rows="4" class="luna-input w-full" placeholder="Descreva com suas palavras..."></textarea></div>
+
+            <div class="luna-card mb-8">
+                <h3 class="section-title"><i class="fas fa-calendar-alt"></i> 10. FREQUÊNCIA</h3>
+                <div class="grid grid-cols-3 gap-2 bg-[#0f172a] p-1 rounded-lg border border-slate-700">
+                    <label class="freq-tab">
+                        <input type="radio" name="frequencia" value="Constante" class="hidden peer" checked>
+                        <div class="tab-content peer-checked:bg-amber-500 peer-checked:text-slate-900">Constante</div>
+                    </label>
+                    <label class="freq-tab">
+                        <input type="radio" name="frequencia" value="Intermitente" class="hidden peer">
+                        <div class="tab-content peer-checked:bg-amber-500 peer-checked:text-slate-900">Intermitente</div>
+                    </label>
+                    <label class="freq-tab">
+                        <input type="radio" name="frequencia" value="Uma vez" class="hidden peer">
+                        <div class="tab-content peer-checked:bg-amber-500 peer-checked:text-slate-900">Uma vez</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="luna-card mb-10">
+                <h3 class="section-title"><i class="fas fa-edit"></i> RESUMO DO MOTORISTA</h3>
+                <textarea id="relato" rows="4" class="luna-input w-full" placeholder="Descreva com suas palavras..."></textarea>
+            </div>
 
             <button id="btn-analisar" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-900 font-extrabold text-xl py-5 rounded-2xl shadow-xl transition-transform transform active:scale-95 flex items-center justify-center gap-3 mb-16">
                 <span>ANALISAR COM O SEU LUNA</span> <i class="fas fa-wrench"></i>
