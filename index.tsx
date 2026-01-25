@@ -1,27 +1,25 @@
 import { marked } from "marked";
 
+// Variáveis globais para controle de áudio
+let mediaRecorder: MediaRecorder | null = null;
+let audioChunks: Blob[] = [];
+let recordedBlob: Blob | null = null; // Armazena o áudio gravado
+let uploadedFile: File | null = null; // Armazena o arquivo enviado
+
 document.addEventListener('DOMContentLoaded', () => {
+    setupLogin();
+    setupAudioLogic();
+    
+    const btnAnalisar = document.getElementById('btn-analisar');
+    if (btnAnalisar) btnAnalisar.addEventListener('click', analisarComIA);
+});
+
+function setupLogin() {
     const loginForm = document.getElementById('login-form') as HTMLFormElement;
     const passwordInput = document.getElementById('password-input') as HTMLInputElement;
     const loginScreen = document.getElementById('login-screen');
     const appScreen = document.getElementById('app-screen');
     const logoutBtn = document.getElementById('logout-btn');
-
-    // Lógica visual do Upload de Áudio
-    const audioInput = document.getElementById('audio-upload') as HTMLInputElement;
-    const audioPreview = document.getElementById('audio-preview');
-    const audioFilename = document.getElementById('audio-filename');
-
-    if (audioInput && audioPreview && audioFilename) {
-        audioInput.addEventListener('change', () => {
-            if (audioInput.files && audioInput.files.length > 0) {
-                audioPreview.classList.remove('hidden');
-                audioFilename.textContent = audioInput.files[0].name;
-            } else {
-                audioPreview.classList.add('hidden');
-            }
-        });
-    }
 
     if (loginForm) {
         loginForm.addEventListener('submit', (e) => {
@@ -35,22 +33,112 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
     if (logoutBtn) logoutBtn.addEventListener('click', () => window.location.reload());
+}
 
-    const btnAnalisar = document.getElementById('btn-analisar');
-    if (btnAnalisar) btnAnalisar.addEventListener('click', analisarComIA);
-});
+function setupAudioLogic() {
+    const audioInput = document.getElementById('audio-upload') as HTMLInputElement;
+    const recordBtn = document.getElementById('record-btn-container');
+    const stopRecordBtn = document.getElementById('btn-stop-record');
+    const clearAudioBtn = document.getElementById('btn-clear-audio');
+    
+    // UI Elements
+    const feedbackContainer = document.getElementById('audio-feedback-container');
+    const statusText = document.getElementById('audio-status-text');
+    const audioPlayer = document.getElementById('audio-player') as HTMLAudioElement;
+    const recordingOverlay = document.getElementById('recording-overlay');
 
-// Converte arquivo para Base64 limpo (sem header data:...)
-const fileToBase64 = (file: File): Promise<string> => {
+    // 1. Lógica de UPLOAD de Arquivo
+    if (audioInput) {
+        audioInput.addEventListener('change', () => {
+            if (audioInput.files && audioInput.files.length > 0) {
+                uploadedFile = audioInput.files[0];
+                recordedBlob = null; // Limpa gravação se houver
+                
+                // Atualiza UI
+                if (feedbackContainer && statusText && audioPlayer) {
+                    feedbackContainer.classList.remove('hidden');
+                    statusText.innerHTML = `<i class="fas fa-file-audio"></i> Arquivo: ${uploadedFile.name}`;
+                    
+                    // Cria URL para preview
+                    const fileURL = URL.createObjectURL(uploadedFile);
+                    audioPlayer.src = fileURL;
+                    audioPlayer.classList.remove('hidden');
+                }
+            }
+        });
+    }
+
+    // 2. Lógica de GRAVAÇÃO
+    if (recordBtn && stopRecordBtn) {
+        recordBtn.addEventListener('click', async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    // Cria o Blob do áudio gravado
+                    const mimeType = mediaRecorder?.mimeType || 'audio/webm';
+                    recordedBlob = new Blob(audioChunks, { type: mimeType });
+                    uploadedFile = null; // Limpa upload se houver
+
+                    // Atualiza UI
+                    if (feedbackContainer && statusText && audioPlayer && recordingOverlay) {
+                        recordingOverlay.classList.add('hidden'); // Esconde overlay
+                        feedbackContainer.classList.remove('hidden');
+                        statusText.innerHTML = `<i class="fas fa-microphone"></i> Gravação Finalizada (${Math.round(recordedBlob.size / 1024)} KB)`;
+                        
+                        const audioURL = URL.createObjectURL(recordedBlob);
+                        audioPlayer.src = audioURL;
+                        audioPlayer.classList.remove('hidden');
+                    }
+
+                    // Para todas as tracks do microfone
+                    stream.getTracks().forEach(track => track.stop());
+                };
+
+                mediaRecorder.start();
+                
+                // Atualiza UI para "Gravando"
+                if (recordingOverlay) recordingOverlay.classList.remove('hidden');
+
+            } catch (err) {
+                console.error("Erro ao acessar microfone:", err);
+                alert("Não foi possível acessar o microfone. Verifique as permissões do navegador.");
+            }
+        });
+
+        stopRecordBtn.addEventListener('click', () => {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+        });
+    }
+
+    // 3. Limpar Áudio
+    if (clearAudioBtn) {
+        clearAudioBtn.addEventListener('click', () => {
+            uploadedFile = null;
+            recordedBlob = null;
+            if (audioInput) audioInput.value = '';
+            if (feedbackContainer) feedbackContainer.classList.add('hidden');
+        });
+    }
+}
+
+// Helpers de Conversão
+const blobToBase64 = (blob: Blob): Promise<string> => {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(blob);
         reader.onload = () => {
             const result = reader.result as string;
-            // Remove o prefixo "data:audio/mp3;base64,"
-            const base64Data = result.split(',')[1]; 
+            const base64Data = result.split(',')[1];
             resolve(base64Data);
         };
         reader.onerror = error => reject(error);
@@ -80,10 +168,10 @@ async function analisarComIA() {
     const btn = document.getElementById('btn-analisar') as HTMLButtonElement;
     const resContainer = document.getElementById('resultado-container');
     const resTexto = document.getElementById('resultado-texto');
-    const audioInput = document.getElementById('audio-upload') as HTMLInputElement;
 
     if (!btn || !resContainer || !resTexto) return;
 
+    // Coleta de dados
     const getVal = (id: string) => (document.getElementById(id) as HTMLInputElement)?.value || "";
     const getChecked = (name: string) => {
         const els = document.querySelectorAll(`input[name="${name}"]:checked`) as NodeListOf<HTMLInputElement>;
@@ -142,45 +230,42 @@ async function analisarComIA() {
 
     btn.disabled = true;
     const oldHtml = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-bolt fa-pulse"></i> SEU LUNA ESTÁ ANALISANDO...';
+    btn.innerHTML = '<i class="fas fa-bolt fa-pulse"></i> SEU LUNA ESTÁ OUVINDO E ANALISANDO...';
     
     resTexto.innerHTML = "";
     resContainer.classList.add('hidden');
 
-    // --- Processamento de Áudio ---
-    let audioData = null;
-    let mimeType = null;
+    // --- PREPARAÇÃO DO ÁUDIO (ARQUIVO OU GRAVAÇÃO) ---
+    let finalAudioData = null;
+    let finalMimeType = null;
     let audioContextMessage = "";
 
-    if (audioInput && audioInput.files && audioInput.files.length > 0) {
-        try {
-            const file = audioInput.files[0];
-            // Limite de 3MB para evitar erro de Payload na Vercel Free
-            const maxSize = 3 * 1024 * 1024; 
-            
-            if (file.size > maxSize) {
-                alert("O arquivo de áudio é muito grande (Máx 3MB). Por favor, grave um áudio mais curto.");
-                btn.disabled = false;
-                btn.innerHTML = oldHtml;
-                return;
+    try {
+        if (recordedBlob) {
+            // Prioridade 1: Áudio Gravado na hora
+            finalAudioData = await blobToBase64(recordedBlob);
+            finalMimeType = recordedBlob.type;
+            audioContextMessage = " (ATENÇÃO: O USUÁRIO GRAVOU UM ÁUDIO DO RUÍDO AGORA. ESCUTE COM ATENÇÃO).";
+        
+        } else if (uploadedFile) {
+            // Prioridade 2: Arquivo Enviado
+            if (uploadedFile.size > 3 * 1024 * 1024) {
+                throw new Error("O arquivo de áudio é muito grande (Máx 3MB).");
             }
-
-            audioData = await fileToBase64(file);
-            mimeType = file.type;
-            audioContextMessage = " (ATENÇÃO: O USUÁRIO ENVIOU UM ÁUDIO. ANALISE-O PARA IDENTIFICAR O PADRÃO SONORO).";
-            
-        } catch (error) {
-            console.error("Erro ao ler áudio:", error);
-            alert("Erro ao processar o arquivo de áudio.");
-            btn.disabled = false;
-            btn.innerHTML = oldHtml;
-            return;
+            finalAudioData = await blobToBase64(uploadedFile);
+            finalMimeType = uploadedFile.type;
+            audioContextMessage = " (ATENÇÃO: O USUÁRIO ENVIOU UM ARQUIVO DE ÁUDIO. ESCUTE COM ATENÇÃO).";
         }
+    } catch (err: any) {
+        alert(err.message || "Erro ao processar o áudio.");
+        btn.disabled = false;
+        btn.innerHTML = oldHtml;
+        return;
     }
 
     const prompt = `
         Atue como o SEU LUNA, um Mecânico Especialista Sênior. 
-        Perfil: Técnico, formal, linguagem clara, objetiva e educativa. Sem gírias excessivas.
+        Perfil: Técnico, formal, linguagem clara, objetiva e educativa.
         
         CONTEXTO (DADOS PARA ANÁLISE):
         Veículo: ${vehicle.modelo} | ${vehicle.ano} | ${vehicle.km} km | ${vehicle.motor} | ${vehicle.cambio}
@@ -193,29 +278,29 @@ async function analisarComIA() {
         - Relato Cliente: "${sintomas.relato}"
         - Outros: ${Object.values(sintomas.extras).join(' ')}
 
-        DIRETRIZES DE RESPOSTA:
-        1. NÃO repita os dados do formulário. Vá direto para a análise.
-        2. Se houver ÁUDIO: Descreva o som que você ouviu (ex: "Ouço um tec-tec metálico rítmico") e use isso como prova principal.
-        3. Se houver POUCA informação, use estatística de DEFEITOS CRÔNICOS DESTE MODELO mas AVISE que é preliminar.
+        DIRETRIZES:
+        1. NÃO repita os dados do formulário.
+        2. Se houver ÁUDIO: Descreva o som (ex: "tec-tec metálico", "zumbido agudo") e use como prova principal.
+        3. Se houver POUCA informação, use estatística de falhas conhecidas do modelo.
         
         ESTRUTURA OBRIGATÓRIA (Markdown):
         ### 1. 🔧 Saudação Inicial
         (Breve e cordial).
 
         ### 2. 🎯 DIAGNÓSTICO PRINCIPAL
-        (Identifique o sistema e o defeito central. Se ouviu o áudio, mencione-o aqui).
+        (Identifique o defeito. Se ouviu o áudio, mencione explicitamente o que ouviu).
 
         ### 3. 🧠 ANÁLISE TÉCNICA
-        (Explique o funcionamento mecânico e como os sintomas/áudio levam a essa conclusão).
+        (Explique o funcionamento mecânico).
 
         ### 4. 📋 CAUSAS PROVÁVEIS
-        (Liste de 3 a 5 causas ordenadas da MAIS PROVÁVEL para a MENOS PROVÁVEL).
+        (Ordenadas por probabilidade).
 
         ### 5. 🛠️ TESTES SUGERIDOS
-        (Liste 3 testes práticos ou verificações visuais para confirmar a causa).
+        (3 testes práticos).
 
         ### 6. 📝 RESUMO E CONCLUSÃO
-        (Síntese técnica e clara para mecânico e cliente).
+        (Síntese clara).
 
         ### 7. 🚨 NÍVEL DE URGÊNCIA
         (Seguro Rodar, Atenção ou Parada Imediata).
@@ -227,8 +312,8 @@ async function analisarComIA() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
                 prompt: prompt,
-                audioData: audioData, // Envia null se não tiver áudio
-                mimeType: mimeType
+                audioData: finalAudioData, 
+                mimeType: finalMimeType
             })
         });
 
