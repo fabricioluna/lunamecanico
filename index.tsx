@@ -1,4 +1,3 @@
-import { GoogleGenAI } from "@google/genai";
 import { marked } from "marked";
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -27,6 +26,32 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnAnalisar) btnAnalisar.addEventListener('click', analisarComIA);
 });
 
+// Função para simular o efeito de digitação (Visual, já que o backend Vercel entrega tudo de uma vez)
+async function typeWriterEffect(text: string, element: HTMLElement, container: HTMLElement) {
+    // 1. Converte Markdown para HTML
+    const htmlContent = await marked.parse(text);
+    
+    // 2. Injeta o HTML com uma animação CSS de "fade-in"
+    element.innerHTML = `
+        <div class="prose prose-invert max-w-none text-justify leading-relaxed space-y-4 fade-in-text">
+            <style>
+                .prose h3 { color: #f59e0b; margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.25rem; font-weight: 700; border-bottom: 1px solid #f59e0b55; padding-bottom: 0.25rem; }
+                .prose p { margin-bottom: 1rem; color: #cbd5e1; }
+                .prose strong { color: #fff; font-weight: 700; }
+                .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
+                .prose li { margin-bottom: 0.5rem; color: #cbd5e1; }
+                /* Animação suave para aparecer o texto */
+                .fade-in-text { animation: fadeIn 0.8s ease-out; }
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+            </style>
+            ${htmlContent}
+        </div>
+    `;
+    
+    // 3. Rola a tela suavemente para o resultado
+    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 async function analisarComIA() {
     const btn = document.getElementById('btn-analisar') as HTMLButtonElement;
     const resContainer = document.getElementById('resultado-container');
@@ -34,7 +59,7 @@ async function analisarComIA() {
 
     if (!btn || !resContainer || !resTexto) return;
 
-    // Funções auxiliares
+    // --- COLETA DE DADOS ---
     const getVal = (id: string) => (document.getElementById(id) as HTMLInputElement)?.value || "";
     const getChecked = (name: string) => {
         const els = document.querySelectorAll(`input[name="${name}"]:checked`) as NodeListOf<HTMLInputElement>;
@@ -54,7 +79,6 @@ async function analisarComIA() {
         return;
     }
 
-    // Coleta COMPLETA de dados + "Outros"
     const sintomas = {
         luzes: getChecked('luzes'),
         motorComp: getChecked('motor_comp'),
@@ -77,7 +101,6 @@ async function analisarComIA() {
         idadeBateria: getVal('idade-bateria'),
         frequencia: (document.querySelector('input[name="frequencia"]:checked') as HTMLInputElement)?.value || "Intermitente",
         relato: (document.getElementById('relato') as HTMLTextAreaElement)?.value || "",
-        // Captura dos campos "Outros"
         extras: {
             luz: getVal('outra-luz'),
             motor: getVal('outro-motor'),
@@ -93,14 +116,16 @@ async function analisarComIA() {
         }
     };
 
+    // --- UI LOADING ---
     btn.disabled = true;
     const oldHtml = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-bolt fa-pulse"></i> SEU LUNA ESTÁ ESCREVENDO...';
-
-    // Limpa e exibe container
+    btn.innerHTML = '<i class="fas fa-bolt fa-pulse"></i> SEU LUNA ESTÁ ANALISANDO...';
+    
+    // Limpa resultado anterior
     resTexto.innerHTML = "";
-    resContainer.classList.remove('hidden');
+    resContainer.classList.add('hidden');
 
+    // --- NOVO PROMPT AJUSTADO ---
     const prompt = `
         Atue como o SEU LUNA, um Mecânico Especialista Sênior. 
         Seu perfil é altamente técnico, formal, porém com uma linguagem clara, objetiva e educativa.
@@ -113,79 +138,3 @@ async function analisarComIA() {
         SINTOMAS E OBSERVAÇÕES COLETADAS:
         - Painel e Motor: ${sintomas.luzes}, ${sintomas.motorComp}. Fumaça: ${sintomas.corFumaca}. Obs: ${sintomas.extras.luz} ${sintomas.extras.motor}
         - Direção/Freios: ${sintomas.dirSusp}, ${sintomas.freios}. Obs: ${sintomas.extras.direcao} ${sintomas.extras.freio}
-        - Ruídos: Tipo: ${sintomas.ruidoTipo}. Origem: ${sintomas.ruidoOrigem} (${sintomas.rodaSpec}). Obs: ${sintomas.extras.ruido}
-        - Condições de Ocorrência: ${sintomas.condicoes}. Obs: ${sintomas.extras.condicao}
-        - Histórico: ${sintomas.historico} (${sintomas.manutDetalhe}). Obs: ${sintomas.extras.historico}
-        - Cheiros: ${sintomas.cheiros}. Obs: ${sintomas.extras.cheiro}
-        - Fluidos: Manchas: ${sintomas.manchas}. Níveis: ${sintomas.niveis}. Obs: ${sintomas.extras.fluido}
-        - Transmissão: Manual: ${sintomas.manualComp}. Auto: ${sintomas.autoComp}. Obs: ${sintomas.extras.transmissao}
-        - Elétrica: Bateria ${sintomas.idadeBateria} anos. Partida: ${sintomas.eletricaPartida}. Acessórios: ${sintomas.eletricaAcess}. Obs: ${sintomas.extras.eletrica}
-        - Frequência: ${sintomas.frequencia}
-
-        RELATO DO CONDUTOR: "${sintomas.relato}"
-
-        INSTRUÇÃO DE ESTRUTURA DO LAUDO (Markdown):
-        
-        ### 1. 🔧 Saudação Inicial
-        (Breve e cordial, confirmando o veículo analisado).
-
-        ### 2. 🎯 DIAGNÓSTICO PRINCIPAL
-        (Seja completo e técnico. Identifique o sistema e o defeito central com precisão).
-
-        ### 3. 🧠 ANÁLISE TÉCNICA
-        (Explique o raciocínio técnico de forma clara. Relacione os sintomas físicos, ruídos e luzes com o funcionamento mecânico do carro. Evite termos vagos).
-
-        ### 4. 📋 CAUSAS PROVÁVEIS
-        (Liste de 3 a 5 causas potenciais. É OBRIGATÓRIO ordenar da MAIS PROVÁVEL para a MENOS PROVÁVEL. Detalhe o componente específico).
-
-        ### 5. 📝 RESUMO E CONCLUSÃO
-        (Escreva um parágrafo síntese que sirva como comunicação universal: deve ser técnico o suficiente para o mecânico entender o que fazer, e claro o suficiente para o cliente entender o problema).
-
-        ### 6. 🚨 NÍVEL DE URGÊNCIA
-        (Defina se é Seguro Rodar, Atenção ou Parada Imediata, justificando o risco técnico).
-    `;
-
-    try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-        
-        const response = await ai.models.generateContentStream({
-            model: "gemini-2.5-flash-preview-09-2025",
-            contents: [{ role: 'user', parts: [{ text: prompt }] }]
-        });
-
-        let accumulatedText = "";
-
-        for await (const chunk of response.stream) {
-            const chunkText = chunk.text();
-            if (chunkText) {
-                accumulatedText += chunkText;
-                resTexto.innerHTML = `
-                    <div class="prose prose-invert max-w-none text-justify leading-relaxed space-y-4">
-                        <style>
-                            .prose h3 { color: #f59e0b; margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.25rem; font-weight: 700; border-bottom: 1px solid #f59e0b55; padding-bottom: 0.25rem; }
-                            .prose p { margin-bottom: 1rem; color: #cbd5e1; }
-                            .prose strong { color: #fff; font-weight: 700; }
-                            .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
-                            .prose li { margin-bottom: 0.5rem; color: #cbd5e1; }
-                        </style>
-                        ${await marked.parse(accumulatedText)}
-                    </div>
-                `;
-                resContainer.scrollIntoView({ behavior: 'smooth', block: 'end' });
-            }
-        }
-        resContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-    } catch (e: any) {
-        console.error("Erro detalhado:", e);
-        let msg = "Ocorreu um erro ao falar com o Seu Luna. Verifique sua conexão.";
-        if (e.message?.includes("API key not valid")) {
-            msg = "Erro: Chave da API inválida.";
-        }
-        alert(msg);
-        resContainer.classList.add('hidden');
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = oldHtml;
-    }
-}
