@@ -356,7 +356,9 @@ async function analisarComIA() {
         4. Leve em conta as "Tentativas Prévias" para não sugerir o que já foi feito.
         
         ESTRUTURA OBRIGATÓRIA (Markdown):
-        ### 1. 🔧 Saudação Inicial
+        ### 1. 🔧 Saudação Técnica
+        (Seja técnico, direto e profissional. Evite excesso de informalidade. Ex: "Olá. Iniciando a análise técnica do veículo [Modelo] com base nos dados fornecidos.").
+
         ### 2. 🎯 DIAGNÓSTICO PRINCIPAL (Seja direto. Se não tiver certeza absoluta, diga "Suspeita Principal")
         ### 3. 🧠 ANÁLISE TÉCNICA (Explique o porquê baseando-se nos sintomas)
         ### 4. 📋 CAUSAS PROVÁVEIS (Ordenadas da mais provável para a menos provável)
