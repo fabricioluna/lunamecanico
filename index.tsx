@@ -15,13 +15,12 @@ let audioChunksDriver: Blob[] = [];
 document.addEventListener('DOMContentLoaded', () => {
     setupLogin();
     setupNoiseAudioLogic(); // Lógica do Grupo 3
-    setupDriverMediaLogic(); // NOVA Lógica do Resumo
+    setupDriverMediaLogic(); // Lógica do Resumo
     
     const btnAnalisar = document.getElementById('btn-analisar');
     if (btnAnalisar) btnAnalisar.addEventListener('click', analisarComIA);
 });
 
-// ... (Função setupLogin permanece igual) ...
 function setupLogin() {
     const loginForm = document.getElementById('login-form') as HTMLFormElement;
     const passwordInput = document.getElementById('password-input') as HTMLInputElement;
@@ -111,21 +110,18 @@ function setupNoiseAudioLogic() {
     }
 }
 
-// --- NOVA LÓGICA GRUPO 11 (RESUMO MULTIMÍDIA) ---
+// --- LÓGICA GRUPO 11 (RESUMO MULTIMÍDIA) ---
 function setupDriverMediaLogic() {
     const uploadInput = document.getElementById('driver-media-upload') as HTMLInputElement;
     const recordBtn = document.getElementById('driver-record-btn');
     const recordIndicator = document.getElementById('driver-recording-indicator');
     const mediaList = document.getElementById('driver-media-list');
 
-    // Função para adicionar item à lista visual e ao array
     const addMediaItem = (blob: Blob, name: string, type: 'file' | 'audio_recording') => {
-        // Validação de Tamanho Global (Aviso simples)
         const currentTotalSize = driverMedia.reduce((acc, item) => acc + item.blob.size, 0) + blob.size;
-        if (currentTotalSize > 4.5 * 1024 * 1024) { // 4.5MB Limite
+        if (currentTotalSize > 4.5 * 1024 * 1024) { 
             alert("Atenção: O total de arquivos ultrapassou 4.5MB. É provável que o envio falhe. Tente enviar vídeos curtos ou menos fotos.");
         }
-
         driverMedia.push({ blob, name, type });
         renderMediaList();
     };
@@ -149,8 +145,6 @@ function setupDriverMediaLogic() {
                 </div>
                 <button class="text-red-400 hover:text-red-300 p-2" data-index="${index}"><i class="fas fa-trash"></i></button>
             `;
-            
-            // Botão remover
             div.querySelector('button')?.addEventListener('click', () => {
                 driverMedia.splice(index, 1);
                 renderMediaList();
@@ -159,50 +153,38 @@ function setupDriverMediaLogic() {
         });
     };
 
-    // 1. Upload de Arquivos (Fotos/Vídeos/Áudios)
     if (uploadInput) {
         uploadInput.addEventListener('change', () => {
             if (uploadInput.files) {
                 Array.from(uploadInput.files).forEach(file => {
                     addMediaItem(file, file.name, 'file');
                 });
-                uploadInput.value = ''; // Reset para permitir adicionar o mesmo arquivo se quiser
+                uploadInput.value = ''; 
             }
         });
     }
 
-    // 2. Gravação de Áudio Explicativo
     if (recordBtn) {
         recordBtn.addEventListener('click', async () => {
-            // Se já estiver gravando, para.
             if (mediaRecorderDriver && mediaRecorderDriver.state === 'recording') {
                 mediaRecorderDriver.stop();
                 return;
             }
-
-            // Inicia gravação
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 mediaRecorderDriver = new MediaRecorder(stream);
                 audioChunksDriver = [];
-
                 mediaRecorderDriver.ondataavailable = e => audioChunksDriver.push(e.data);
-                
                 mediaRecorderDriver.onstop = () => {
                     const mimeType = mediaRecorderDriver?.mimeType || 'audio/webm';
                     const blob = new Blob(audioChunksDriver, { type: mimeType });
                     addMediaItem(blob, `Explicação em Áudio (${new Date().toLocaleTimeString()})`, 'audio_recording');
-                    
                     if (recordIndicator) recordIndicator.classList.add('hidden');
                     stream.getTracks().forEach(track => track.stop());
                 };
-
                 mediaRecorderDriver.start();
                 if (recordIndicator) recordIndicator.classList.remove('hidden');
-
-            } catch (err) {
-                alert("Erro ao acessar microfone para explicação.");
-            }
+            } catch (err) { alert("Erro ao acessar microfone para explicação."); }
         });
     }
 }
@@ -306,7 +288,7 @@ async function analisarComIA() {
 
     btn.disabled = true;
     const oldHtml = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-bolt fa-pulse"></i> SEU LUNA ESTÁ ANALISANDO TUDO (ISSO PODE DEMORAR UM POUCO)...';
+    btn.innerHTML = '<i class="fas fa-bolt fa-pulse"></i> SEU LUNA ESTÁ ANALISANDO TUDO...';
     
     resTexto.innerHTML = "";
     resContainer.classList.add('hidden');
@@ -329,8 +311,7 @@ async function analisarComIA() {
         }
     } catch (e) { console.error(e); }
 
-    // 2. Processa Mídias do Motorista (Grupo Resumo)
-    // Converte a lista driverMedia para o formato que a API espera
+    // 2. Processa Mídias do Motorista
     const driverMediaFiles = [];
     try {
         for (const item of driverMedia) {
@@ -342,8 +323,13 @@ async function analisarComIA() {
             contextMsg += ` [Anexo extra: ${item.name}]`;
         }
     } catch (e) {
-        console.error("Erro ao processar mídias do motorista", e);
+        console.error("Erro ao processar mídias", e);
         alert("Erro ao processar um dos arquivos anexados.");
+    }
+
+    // Se não tiver nada, define mensagem padrão para o Prompt
+    if (contextMsg === "") {
+        contextMsg = "Nenhum arquivo de mídia foi enviado pelo usuário.";
     }
 
     const prompt = `
@@ -352,27 +338,29 @@ async function analisarComIA() {
         CONTEXTO TÉCNICO:
         Veículo: ${vehicle.modelo} | ${vehicle.ano} | ${vehicle.km} km | ${vehicle.motor} | ${vehicle.cambio}
         
-        SINTOMAS:
+        SINTOMAS E DADOS:
         - Ruídos: ${sintomas.ruidoTipo} em ${sintomas.ruidoOrigem}. Obs: ${sintomas.extras.ruido}
         - Painel/Motor: ${sintomas.luzes}, ${sintomas.motorComp}.
         - Geral: ${sintomas.dirSusp} ${sintomas.freios} ${sintomas.cheiros} ${sintomas.manchas}
         - Contexto: ${sintomas.condicoes} | Frequência: ${sintomas.frequencia}
         - Tentativas Prévias: "${sintomas.tentativasSolucao}"
         - Relato do Motorista: "${sintomas.relato}"
+        - Outras Observações: ${Object.values(sintomas.extras).join(' ')}
         
-        ARQUIVOS ANEXADOS: ${contextMsg}
+        STATUS DOS ARQUIVOS: ${contextMsg}
         
-        DIRETRIZES:
-        1. Analise TODAS as mídias enviadas (Áudios de ruído, Fotos do painel, Vídeos do motor, Explicações em áudio).
-        2. Se houver imagens/vídeos, descreva o que vê de anormal. Se houver áudio, descreva o som.
-        3. Cruze o relato textual com o que você vê/ouve nos arquivos.
+        DIRETRIZES OBRIGATÓRIAS:
+        1. SEU OBJETIVO É DAR UM DIAGNÓSTICO TÉCNICO COMPLETO AGORA.
+        2. SE NÃO HOUVER ARQUIVOS: **NÃO PEÇA ARQUIVOS**. Isso é crucial. Se o usuário não mandou, assuma que ele não tem. Baseie seu diagnóstico exclusivamente nos sintomas marcados e no modelo do carro. Use sua experiência para deduzir o defeito mais provável.
+        3. SE HOUVER ARQUIVOS: Use-os para confirmar ou refutar hipóteses. Descreva o que viu/ouviu (ex: "No áudio ouve-se um tec-tec de tucho").
+        4. Leve em conta as "Tentativas Prévias" para não sugerir o que já foi feito.
         
         ESTRUTURA OBRIGATÓRIA (Markdown):
         ### 1. 🔧 Saudação Inicial
-        ### 2. 🎯 DIAGNÓSTICO PRINCIPAL (Com base nos sintomas e mídias)
-        ### 3. 🧠 ANÁLISE TÉCNICA
-        ### 4. 📋 CAUSAS PROVÁVEIS (Ordenadas)
-        ### 5. 🛠️ TESTES SUGERIDOS
+        ### 2. 🎯 DIAGNÓSTICO PRINCIPAL (Seja direto. Se não tiver certeza absoluta, diga "Suspeita Principal")
+        ### 3. 🧠 ANÁLISE TÉCNICA (Explique o porquê baseando-se nos sintomas)
+        ### 4. 📋 CAUSAS PROVÁVEIS (Ordenadas da mais provável para a menos provável)
+        ### 5. 🛠️ TESTES SUGERIDOS (Passos práticos para o mecânico/motorista)
         ### 6. 📝 RESUMO E CONCLUSÃO
         ### 7. 🚨 NÍVEL DE URGÊNCIA
     `;
@@ -383,9 +371,9 @@ async function analisarComIA() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
                 prompt: prompt,
-                audioData: noiseAudioData, // Legado (Grupo 3)
-                mimeType: noiseMimeType,   // Legado (Grupo 3)
-                mediaFiles: driverMediaFiles // Novo (Resumo do Motorista)
+                audioData: noiseAudioData, 
+                mimeType: noiseMimeType,   
+                mediaFiles: driverMediaFiles 
             })
         });
 
